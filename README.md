@@ -37,4 +37,4 @@ Overzealous goal setting and cluttered apps can quickly lead to abandoning new h
 - Turquoise – `#84DCCF`  
 - Blue – `#0D5A66`
 
-
+![Habit_3_Concept.png](https://github.com/Sloth404/habit_3/blob/main/Habit_3_Concept.png)
