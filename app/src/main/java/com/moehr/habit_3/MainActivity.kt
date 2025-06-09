@@ -1,20 +1,43 @@
 package com.moehr.habit_3
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.moehr.habit_3.ui.overview.Overview
+import com.moehr.habit_3.ui.settings.Settings
+import com.moehr.habit_3.ui.statistics.Statistics
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_nav)
+        bottomNavigationView.itemIconTintList = null
+
+        val overviewFragment = Overview()
+        val statisticsFragment = Statistics()
+        val settingsFragment = Settings()
+
+        setCurrentFragment(overviewFragment)
+
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.menu_overview -> setCurrentFragment(overviewFragment)
+                R.id.menu_statistics -> setCurrentFragment(statisticsFragment)
+                R.id.menu_settings -> setCurrentFragment(settingsFragment)
+                else -> return@setOnItemSelectedListener false
+            }
+            true
         }
+
+        bottomNavigationView.selectedItemId = R.id.menu_overview
     }
+
+    private fun setCurrentFragment(fragment: Fragment) =
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.main, fragment)
+            commit()
+        }
 }
