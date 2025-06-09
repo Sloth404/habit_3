@@ -1,11 +1,15 @@
 package com.moehr.habit_3.ui.overview
 
 import android.content.Intent
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.moehr.habit_3.EditHabitActivity
@@ -64,6 +68,7 @@ class Overview : Fragment() {
         )
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycleView)
+
         adapter = HabitAdapter(buildList()) {
             val target: KClass<out EditHabitActivity> = EditHabitActivity::class
             startActivity(Intent(requireContext(), target.java))
@@ -71,6 +76,87 @@ class Overview : Fragment() {
 
         recyclerView.setLayoutManager(LinearLayoutManager(requireContext()))
         recyclerView.adapter = adapter
+
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+
+            private val backgroundPaint = Paint().apply {
+                color = Color.RED
+            }
+
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean = false
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                if (adapter.getItemViewType(position) == HabitAdapter.TYPE_HABIT) {
+                    actualHabits.removeAt(position)
+                    adapter.updateData(buildList())
+                } else {
+                    adapter.notifyItemChanged(position)
+                }
+            }
+
+            override fun getSwipeDirs(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+                return if (adapter.getItemViewType(viewHolder.adapterPosition) == HabitAdapter.TYPE_PLACEHOLDER) {
+                    0 // Disable swipe for placeholder
+                } else {
+                    super.getSwipeDirs(recyclerView, viewHolder)
+                }
+            }
+
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE && dX < 0) {
+                    val itemView = viewHolder.itemView
+
+                    val cornerRadius = itemView.resources.displayMetrics.density * 20 // 20dp in pixels
+                    val left = itemView.right.toFloat() + dX
+                    val top = itemView.top.toFloat()
+                    val right = itemView.right.toFloat()
+                    val bottom = itemView.bottom.toFloat()
+
+                    val path = android.graphics.Path().apply {
+                        moveTo(left, top)
+
+                        // top-right corner
+                        lineTo(right - cornerRadius, top)
+                        quadTo(right, top, right, top + cornerRadius)
+
+                        // bottom-right corner
+                        lineTo(right, bottom - cornerRadius)
+                        quadTo(right, bottom, right, bottom)
+
+                        // bottom-left corner
+                        lineTo(left + cornerRadius, bottom)
+                        quadTo(left, bottom, left, bottom)
+
+                        // top-left corner
+                        lineTo(left - cornerRadius, top)
+                        quadTo(left, top, left, top)
+
+                        close()
+                    }
+
+                    c.drawPath(path, backgroundPaint)
+                }
+
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+            }
+
+        })
+
+
+        itemTouchHelper.attachToRecyclerView(recyclerView)
 
         return view
     }

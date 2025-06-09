@@ -14,8 +14,8 @@ class HabitAdapter(
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
-        private const val TYPE_HABIT = 0
-        private const val TYPE_PLACEHOLDER = 1
+        const val TYPE_HABIT = 0
+        const val TYPE_PLACEHOLDER = 1
     }
 
     private var selectedPosition: Int? = null
@@ -55,6 +55,12 @@ class HabitAdapter(
             }
             is HabitListItem.Placeholder -> { /* no-op */ }
         }
+    }
+
+    fun updateData(newItems: List<HabitListItem>) {
+        (items as? MutableList)?.clear()
+        (items as? MutableList)?.addAll(newItems)
+        notifyDataSetChanged()
     }
 
     class HabitViewHolder(
