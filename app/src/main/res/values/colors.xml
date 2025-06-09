@@ -7,4 +7,8 @@
     <color name="dark_grey">#222220</color>
     <color name="torquoise">#84DCCF</color>
     <color name="blue">#0D5A66</color>
+
+    <color name="item_one">#b2f2bb</color>
+    <color name="item_two">#ffec99</color>
+    <color name="item_three">#a5d8ff</color>
 </resources>
