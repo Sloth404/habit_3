@@ -28,11 +28,11 @@ class HabitAdapter(
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_HABIT -> HabitViewHolder(
-                inflater.inflate(R.layout.habit_placeholder, parent, false),
+                inflater.inflate(R.layout.item_habit_placeholder, parent, false),
             )
 
             TYPE_PLACEHOLDER -> PlaceholderViewHolder(
-                inflater.inflate(R.layout.habit_placeholder, parent, false),
+                inflater.inflate(R.layout.item_habit_placeholder, parent, false),
                 onAddHabitClick,
             )
 

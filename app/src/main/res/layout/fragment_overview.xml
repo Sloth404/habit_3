@@ -26,7 +26,7 @@
         android:layout_height="5dp"
         android:layout_marginStart="64dp"
         android:layout_marginEnd="64dp"
-        android:background="@drawable/seperator_line"
+        android:background="@drawable/bg_separator_line"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />

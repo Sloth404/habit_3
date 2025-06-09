@@ -4,13 +4,13 @@
     <item
         android:id="@+id/menu_statistics"
         android:title="@string/menu_statistics"
-        android:icon="@drawable/statistics_svg"/>
+        android:icon="@drawable/ic_statistics"/>
     <item
         android:id="@+id/menu_overview"
         android:title="@string/menu_overview"
-        android:icon="@drawable/overview_svg"/>
+        android:icon="@drawable/ic_overview"/>
     <item
         android:id="@+id/menu_settings"
         android:title="@string/menu_settings"
-        android:icon="@drawable/settings_svg"/>
+        android:icon="@drawable/ic_settings"/>
 </menu>
