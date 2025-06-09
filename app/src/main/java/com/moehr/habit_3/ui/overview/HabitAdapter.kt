@@ -1,9 +1,11 @@
-package com.moehr.habit_3
+package com.moehr.habit_3.ui.overview
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.moehr.habit_3.R
+import com.moehr.habit_3.data.model.Habit
 
 class HabitAdapter(
     private val items: List<HabitListItem>,

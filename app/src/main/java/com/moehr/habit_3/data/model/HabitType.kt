@@ -1,4 +1,4 @@
-package com.moehr.habit_3
+package com.moehr.habit_3.data.model
 
 enum class HabitType {
     BULD,
