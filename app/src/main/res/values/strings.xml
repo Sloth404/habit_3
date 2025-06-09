@@ -1,8 +1,12 @@
 <resources>
-    <string name="app_name">habit_3</string>
+    <string name="app_name">Habit³</string>
     <string name="menu_statistics">Statistics</string>
     <string name="menu_overview">Overview</string>
     <string name="menu_settings">Settings</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="overview_month">Month</string>
+    <string name="overview_week_preview_names">mo tu we th fr sa su</string>
+    <string name="overview_week_preview_numbers">08 09 10 11 12 13 14</string>
+    <string name="overview_add">add habit</string>
+    <string name="overview_add_description">add habit placeholder</string>
+    <string name="item_habit_days">days</string>
 </resources>
