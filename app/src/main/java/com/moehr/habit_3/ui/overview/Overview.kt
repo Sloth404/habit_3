@@ -39,7 +39,7 @@ class Overview : Fragment() {
             Habit(
                 id = 1L,
                 name = "Morning Jog",
-                type = HabitType.BULD,
+                type = HabitType.BUILD,
                 unit = "minutes",
                 repeat = RepeatPattern.DAILY,
                 reminders = listOf(

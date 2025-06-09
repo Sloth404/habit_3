@@ -11,4 +11,10 @@
     <color name="item_one">#b2f2bb</color>
     <color name="item_two">#ffec99</color>
     <color name="item_three">#a5d8ff</color>
+
+    <color name="button_cancel">#e03131</color>
+    <color name="button_save">#2f9e44</color>
+
+    <color name="button_cancel_light">#ffc9c9</color>
+    <color name="button_save_light">#b2f2bb</color>
 </resources>
