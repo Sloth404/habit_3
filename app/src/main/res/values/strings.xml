@@ -30,4 +30,8 @@
     <string name="edit_section_repeat">Repeat</string>
     <string name="edit_section_target">Target</string>
     <string name="edit_section_habit_type_day">/day</string>
+    <string name="dialog_cancel_title">Discard Changes?</string>
+    <string name="dialog_cancel_message">Are you sure you want to discard your changes?</string>
+    <string name="dialog_cancel_stay">Stay</string>
+    <string name="dialog_cancel_leave">Leave</string>
 </resources>

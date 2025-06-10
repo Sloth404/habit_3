@@ -72,17 +72,23 @@ class EditHabitActivity : AppCompatActivity() {
     }
 
     private fun showCancelConfirmationDialog() {
-        AlertDialog.Builder(this)
-            .setTitle("Discard Changes?")
-            .setMessage("Are you sure you want to discard your changes?")
-            .setPositiveButton("Leave") { _, _ ->
-                finish()
-            }
-            .setNegativeButton("Stay") { dialog, _ ->
-                dialog.dismiss()
-            }
+        val dialogView = layoutInflater.inflate(R.layout.dialog_cancel, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
             .create()
-            .show()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val btnStay = dialogView.findViewById<Button>(R.id.btnStay)
+        val btnLeave = dialogView.findViewById<Button>(R.id.btnLeave)
+
+        btnStay.setOnClickListener { dialog.dismiss() }
+        btnLeave.setOnClickListener {
+            dialog.dismiss()
+            finish()
+        }
+
+        dialog.show()
     }
 
     private fun checkInputs() {
