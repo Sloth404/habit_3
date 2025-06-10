@@ -4,12 +4,6 @@ import com.moehr.habit_3.data.model.HabitType
 import com.moehr.habit_3.data.model.RepeatPattern
 
 sealed class EditItem {
-    data class Header(
-        val title: String,
-        val type: SectionType,
-        var isExpanded: Boolean
-    ) : EditItem()
-
     data class HabitTypeContent(
         var habitType: HabitType,
         var repeatPattern: RepeatPattern,

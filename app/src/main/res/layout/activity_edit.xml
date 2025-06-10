@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -12,7 +11,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/jetbrains_mono"
-        android:text="Create"
         android:textSize="34sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -24,7 +22,7 @@
         android:layout_marginStart="12dp"
         android:layout_marginTop="24dp"
         android:fontFamily="@font/jetbrains_mono"
-        android:text="Habit Name"
+        android:text="@string/edit_habit_name"
         android:textSize="24sp"
         app:layout_constraintStart_toEndOf="@+id/tvState"
         app:layout_constraintTop_toTopOf="parent" />
@@ -49,7 +47,7 @@
         android:layout_marginEnd="32dp"
         android:ems="10"
         android:fontFamily="@font/jetbrains_mono"
-        android:hint="name"
+        android:hint="@string/edit_et_habit_name_hint"
         android:inputType="text"
         android:textColor="@color/dark_grey"
         android:textSize="20sp"
@@ -67,7 +65,7 @@
         android:ems="10"
         android:fontFamily="@font/jetbrains_mono"
         android:gravity="start|top"
-        android:hint="motivational message"
+        android:hint="@string/edit_et_habit_message_hint"
         android:inputType="textMultiLine"
         android:textColor="@color/dark_grey"
         android:textSize="20sp"
@@ -82,7 +80,7 @@
         android:layout_height="56dp"
         android:layout_marginStart="32dp"
         android:layout_marginBottom="32dp"
-        android:text="cancel"
+        android:text="@string/edit_btn_cancel"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -94,7 +92,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="32dp"
-        android:text="save"
+        android:text="@string/edit_btn_save"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

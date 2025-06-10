@@ -3,60 +3,37 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Switch
-import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.moehr.habit_3.R
 import com.moehr.habit_3.data.model.HabitType
 import com.moehr.habit_3.data.model.RepeatPattern
 import com.moehr.habit_3.ui.edit.EditItem
-import com.moehr.habit_3.ui.edit.SectionType
 
 class EditSectionAdapter(
     private val items: MutableList<EditItem>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
-        private const val TYPE_HEADER = 0
-        private const val TYPE_HABIT_TYPE = 1
-        private const val TYPE_REMINDER = 2
+        private const val TYPE_HABIT_TYPE = 0
+        private const val TYPE_REMINDER = 1
     }
 
     override fun getItemViewType(position: Int): Int = when (items[position]) {
-        is EditItem.Header -> TYPE_HEADER
         is EditItem.HabitTypeContent -> TYPE_HABIT_TYPE
         is EditItem.ReminderContent -> TYPE_REMINDER
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-
         return when (viewType) {
-            TYPE_HEADER -> HeaderViewHolder(
-                inflater.inflate(
-                    R.layout.item_section_header,
-                    parent,
-                    false
-                )
-            )
-
             TYPE_HABIT_TYPE -> HabitTypeViewHolder(
-                inflater.inflate(
-                    R.layout.item_habit_type,
-                    parent,
-                    false
-                )
+                inflater.inflate(R.layout.item_habit_type, parent, false)
             )
-
             TYPE_REMINDER -> ReminderViewHolder(
-                inflater.inflate(
-                    R.layout.item_reminder,
-                    parent,
-                    false
-                )
+                inflater.inflate(R.layout.item_reminder, parent, false)
             )
-
             else -> throw IllegalArgumentException("Invalid view type")
         }
     }
@@ -65,69 +42,36 @@ class EditSectionAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = items[position]) {
-            is EditItem.Header -> (holder as HeaderViewHolder).bind(item, position)
             is EditItem.HabitTypeContent -> (holder as HabitTypeViewHolder).bind(item)
             is EditItem.ReminderContent -> (holder as ReminderViewHolder).bind(item)
         }
     }
 
-    inner class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val title: TextView = view.findViewById(R.id.tvHeaderTitle)
-
-        fun bind(header: EditItem.Header, position: Int) {
-            title.text = header.title
-
-            itemView.setOnClickListener {
-                if (header.isExpanded) {
-                    // collapse
-                    header.isExpanded = false
-
-                    // Avoid index out of bounds or wrong removal
-                    if (position + 1 < items.size && !isHeader(items[position + 1])) {
-                        items.removeAt(position + 1)
-                        notifyItemRemoved(position + 1)
-                    }
-
-                } else {
-                    // expand
-                    header.isExpanded = true
-                    val content = when (header.type) {
-                        SectionType.HABIT_TYPE -> EditItem.HabitTypeContent(
-                            habitType = HabitType.BUILD,
-                            repeatPattern = RepeatPattern.DAILY,
-                            unit = "",
-                            target = 1
-                        )
-                        SectionType.REMINDER -> EditItem.ReminderContent()
-                    }
-                    items.add(position + 1, content)
-                    notifyItemInserted(position + 1)
-                }
-            }
-        }
-
-        private fun isHeader(item: EditItem): Boolean = item is EditItem.Header
-    }
-
     inner class HabitTypeViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val btnBuild: Button = view.findViewById(R.id.btnBuild)
         private val btnBreak: Button = view.findViewById(R.id.btnBreak)
-        private val btnRepeat: Button = view.findViewById(R.id.btnRepeatPattern)
-        private val inputUnit: EditText = view.findViewById(R.id.editTextText)
-        private val inputValue: EditText = view.findViewById(R.id.editTextText2)
+        private val btnRepeat: Button = view.findViewById(R.id.btnRepeat)
+        private val inputUnit: EditText = view.findViewById(R.id.etUnit)
+        private val inputValue: EditText = view.findViewById(R.id.etTarget)
 
         fun bind(item: EditItem.HabitTypeContent) {
+            btnBuild.setTextColor(ContextCompat.getColor(itemView.context, R.color.torquoise))
+
             // Toggle habit type
             btnBuild.setOnClickListener {
                 item.habitType = HabitType.BUILD
                 btnBuild.isEnabled = false
                 btnBreak.isEnabled = true
+                btnBuild.setTextColor(ContextCompat.getColor(itemView.context, R.color.torquoise))
+                btnBreak.setTextColor(ContextCompat.getColor(itemView.context, R.color.white))
             }
 
             btnBreak.setOnClickListener {
                 item.habitType = HabitType.BREAK
                 btnBreak.isEnabled = false
                 btnBuild.isEnabled = true
+                btnBuild.setTextColor(ContextCompat.getColor(itemView.context, R.color.white))
+                btnBreak.setTextColor(ContextCompat.getColor(itemView.context, R.color.torquoise))
             }
 
             // Initial UI sync
@@ -168,27 +112,39 @@ class EditSectionAdapter(
         private val btnEvening: Button = view.findViewById(R.id.btnEvening)
         private val btnCustom: Button = view.findViewById(R.id.btnCustom)
 
+        private val buttons = listOf(
+            "MORNING" to btnMorning,
+            "NOON" to btnNoon,
+            "EVENING" to btnEvening,
+            "CUSTOM" to btnCustom
+        )
+
         fun bind(item: EditItem.ReminderContent) {
             swPN.isChecked = item.pushEnabled
 
             fun updateButtons() {
-                val enabled = swPN.isChecked
+                val isEnabled = swPN.isChecked
                 val selected = item.timesOfDay.firstOrNull()
 
-                val timeButtons = listOf(
-                    "MORNING" to btnMorning,
-                    "NOON" to btnNoon,
-                    "EVENING" to btnEvening,
-                    "CUSTOM" to btnCustom
-                )
-
-                timeButtons.forEach { (label, button) ->
-                    button.isEnabled = enabled && label != selected
+                buttons.forEach { (label, button) ->
+                    button.isEnabled = isEnabled
+                    val textColor = when {
+                        !isEnabled -> ContextCompat.getColor(itemView.context, R.color.dark_grey)
+                        label == selected -> ContextCompat.getColor(itemView.context, R.color.torquoise)
+                        else -> ContextCompat.getColor(itemView.context, R.color.white)
+                    }
+                    button.setTextColor(textColor)
                 }
             }
 
             swPN.setOnCheckedChangeListener { _, isChecked ->
                 item.pushEnabled = isChecked
+
+                // Reset selection if turning ON with empty selection
+                if (isChecked && item.timesOfDay.isEmpty()) {
+                    item.timesOfDay = listOf("MORNING")
+                }
+
                 updateButtons()
             }
 
@@ -204,6 +160,5 @@ class EditSectionAdapter(
 
             updateButtons()
         }
-
     }
 }

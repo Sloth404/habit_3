@@ -1,5 +1,6 @@
 package com.moehr.habit_3.data.model
 
+import java.io.Serializable
 import java.time.LocalDateTime
 
 data class Habit(
@@ -12,7 +13,7 @@ data class Habit(
     val createdAt: LocalDateTime,
     val motivationalNote: String,
     val log: List<HabitLogEntryDTO>
-) {
+) : Serializable {
     fun isSuccessful(date: LocalDateTime): Boolean {
         return log.any { it.date == date && it.success }
     }
