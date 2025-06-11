@@ -34,4 +34,7 @@
     <string name="dialog_cancel_message">Are you sure you want to discard your changes?</string>
     <string name="dialog_cancel_stay">Stay</string>
     <string name="dialog_cancel_leave">Leave</string>
+    <string name="detail_title_habit">Habit:</string>
+    <string name="detail_goal">Goal</string>
+    <string name="detail_button_edit">Edit your habit</string>
 </resources>

@@ -3,8 +3,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="ghost_white">#F0F2EF</color>
     <color name="dark_grey">#222220</color>
+    <color name="light_grey">#D7D7D5</color>
+    <color name="ghost_white">#F0F2EF</color>
+
     <color name="torquoise">#84DCCF</color>
     <color name="blue">#0D5A66</color>
 
