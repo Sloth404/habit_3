@@ -38,4 +38,26 @@
     <string name="detail_goal">Goal</string>
     <string name="detail_button_edit">Edit your habit</string>
     <string name="statistics_title">Statistics</string>
+    <string name="credits_underlined"><u>Credits</u></string>
+    <string name="inspiration_underlined"><u>Inspiration</u></string>
+    <string name="settings_inspiration">Inspiration</string>
+    <string name="settings_credtis">Credits</string>
+    <string name="credits_developed_by">Developed by…</string>
+    <string name="credits_georgi">\@Georgi Gerov, MNr, j0-ji</string>
+    <string name="credits_malte">\@Malte Möhring, 19035, Sloth404</string>
+    <string name="settings_title">Settings and More</string>
+    <string name="settings_push">Push-Notification</string>
+    <string name="settings_morning">Morning</string>
+    <string name="settings_custom_time">00:00</string>
+    <string name="settings_noon">Noon</string>
+    <string name="settings_morning_time">09:00</string>
+    <string name="settings_evening">Evening</string>
+    <string name="settings_noon_time">13:00</string>
+    <string name="settings_custom">Custom</string>
+    <string name="settings_evening_time">17:00</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_app">App</string>
+    <string name="settings_light">Light</string>
+    <string name="settings_dark">Dark</string>
+    <string name="settings_icon">Icon</string>
 </resources>
