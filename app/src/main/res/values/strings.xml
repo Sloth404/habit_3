@@ -45,7 +45,7 @@
     <string name="credits_developed_by">Developed by…</string>
     <string name="credits_georgi">\@Georgi Gerov, MNr, j0-ji</string>
     <string name="credits_malte">\@Malte Möhring, 19035, Sloth404</string>
-    <string name="settings_title">Settings and More</string>
+    <string name="settings_title">Settings</string>
     <string name="settings_push">Push-Notification</string>
     <string name="settings_morning">Morning</string>
     <string name="settings_custom_time">00:00</string>
