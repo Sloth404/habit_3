@@ -37,4 +37,5 @@
     <string name="detail_title_habit">Habit:</string>
     <string name="detail_goal">Goal</string>
     <string name="detail_button_edit">Edit your habit</string>
+    <string name="statistics_title">Statistics</string>
 </resources>
