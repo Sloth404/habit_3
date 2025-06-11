@@ -1,11 +1,12 @@
 package com.moehr.habit_3.data.model
 
+import java.io.Serializable
 import java.time.LocalTime
 
 data class ReminderTimeDTO(
     val hour: Int,
     val minute: Int,
-) {
+) : Serializable {
     fun toLocalTime(): LocalTime = LocalTime.of(hour, minute)
 
     companion object {

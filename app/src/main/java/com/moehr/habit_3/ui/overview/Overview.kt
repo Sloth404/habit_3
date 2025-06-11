@@ -1,5 +1,6 @@
 package com.moehr.habit_3.ui.overview
 
+import com.moehr.habit_3.ui.detail.DetailActivity
 import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
@@ -39,7 +40,7 @@ class Overview : Fragment() {
             Habit(
                 id = 1L,
                 name = "Morning Jog",
-                type = HabitType.BULD,
+                type = HabitType.BUILD,
                 unit = "minutes",
                 repeat = RepeatPattern.DAILY,
                 reminders = listOf(
@@ -77,11 +78,7 @@ class Overview : Fragment() {
         recyclerView.setLayoutManager(LinearLayoutManager(requireContext()))
         recyclerView.adapter = adapter
 
-        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-
-            private val backgroundPaint = Paint().apply {
-                color = Color.RED
-            }
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
 
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -91,9 +88,22 @@ class Overview : Fragment() {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
+
                 if (adapter.getItemViewType(position) == HabitAdapter.TYPE_HABIT) {
-                    actualHabits.removeAt(position)
-                    adapter.updateData(buildList())
+                    val habit = actualHabits[position]
+
+                    when (direction) {
+                        ItemTouchHelper.LEFT -> {
+                            actualHabits.removeAt(position)
+                            adapter.updateData(buildList())
+                        }
+                        ItemTouchHelper.RIGHT -> {
+                            val target: KClass<out DetailActivity> = DetailActivity::class
+                            startActivity(Intent(requireContext(), target.java).apply { putExtra("habit_data", habit) })
+
+                            adapter.notifyItemChanged(position)
+                        }
+                    }
                 } else {
                     adapter.notifyItemChanged(position)
                 }
@@ -116,42 +126,74 @@ class Overview : Fragment() {
                 actionState: Int,
                 isCurrentlyActive: Boolean
             ) {
-                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE && dX < 0) {
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
                     val itemView = viewHolder.itemView
-
-                    val cornerRadius = itemView.resources.displayMetrics.density * 20 // 20dp in pixels
-                    val left = itemView.right.toFloat() + dX
+                    val cornerRadius = itemView.resources.displayMetrics.density * 20 // 20dp
                     val top = itemView.top.toFloat()
-                    val right = itemView.right.toFloat()
                     val bottom = itemView.bottom.toFloat()
 
-                    val path = android.graphics.Path().apply {
-                        moveTo(left, top)
+                    val path = android.graphics.Path()
 
-                        // top-right corner
-                        lineTo(right - cornerRadius, top)
-                        quadTo(right, top, right, top + cornerRadius)
-
-                        // bottom-right corner
-                        lineTo(right, bottom - cornerRadius)
-                        quadTo(right, bottom, right, bottom)
-
-                        // bottom-left corner
-                        lineTo(left + cornerRadius, bottom)
-                        quadTo(left, bottom, left, bottom)
-
-                        // top-left corner
-                        lineTo(left - cornerRadius, top)
-                        quadTo(left, top, left, top)
-
-                        close()
+                    val paint = Paint().apply {
+                        color = if (dX > 0) Color.GREEN else Color.RED
                     }
 
-                    c.drawPath(path, backgroundPaint)
+                    if (dX < 0) {
+                        val left = itemView.right.toFloat() + dX
+                        val right = itemView.right.toFloat()
+
+                        path.apply {
+                            moveTo(left, top)
+
+                            // top-right corner
+                            lineTo(right - cornerRadius, top)
+                            quadTo(right, top, right, top + cornerRadius)
+
+                            // bottom-right corner
+                            lineTo(right, bottom - cornerRadius)
+                            quadTo(right, bottom, right, bottom)
+
+                            // bottom-left corner
+                            lineTo(left + cornerRadius, bottom)
+                            quadTo(left, bottom, left, bottom )
+
+                            // top-left corner
+                            lineTo(left - cornerRadius, top)
+                            quadTo(left, top, left, top)
+
+                            close()
+                        }
+
+                    } else if (dX > 0) {
+                        val left = itemView.left.toFloat()
+                        val right = itemView.left.toFloat() + dX
+
+                        path.apply {
+                            moveTo(left, top)
+
+                            // top-left corner
+                            lineTo(left, top)
+
+                            // bottom-left corner
+                            lineTo(left, bottom - cornerRadius)
+                            quadTo(left, bottom, left + cornerRadius, bottom)
+
+                            // bottom-right corner
+                            lineTo(right + cornerRadius, bottom)
+
+                            // top-right corner
+                            lineTo(right, top)
+
+                            close()
+                        }
+                    }
+
+                    c.drawPath(path, paint)
                 }
 
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             }
+
 
         })
 
