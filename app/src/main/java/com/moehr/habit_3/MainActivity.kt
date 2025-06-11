@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.moehr.habit_3.ui.overview.Overview
-import com.moehr.habit_3.ui.settings.Settings
+import com.moehr.habit_3.ui.settings.SettingsFragment
 import com.moehr.habit_3.ui.statistics.Statistics
 
 class MainActivity : AppCompatActivity() {
@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
 
         val overviewFragment = Overview()
         val statisticsFragment = Statistics()
-        val settingsFragment = Settings()
+        val settingsFragment = SettingsFragment()
 
         setCurrentFragment(overviewFragment)
 
