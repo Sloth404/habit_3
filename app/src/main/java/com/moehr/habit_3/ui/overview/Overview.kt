@@ -1,5 +1,6 @@
 package com.moehr.habit_3.ui.overview
 
+import com.moehr.habit_3.ui.detail.DetailActivity
 import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
@@ -97,7 +98,7 @@ class Overview : Fragment() {
                             adapter.updateData(buildList())
                         }
                         ItemTouchHelper.RIGHT -> {
-                            val target: KClass<out EditHabitActivity> = EditHabitActivity::class
+                            val target: KClass<out DetailActivity> = DetailActivity::class
                             startActivity(Intent(requireContext(), target.java).apply { putExtra("habit_data", habit) })
 
                             adapter.notifyItemChanged(position)

@@ -1,6 +1,7 @@
 package com.moehr.habit_3.data.model
 
 import java.io.Serializable
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class Habit(
@@ -19,4 +20,7 @@ data class Habit(
     }
 
     fun getCurrentStreak(): Int = log.count { it.success }
+
+    fun getSuccessfulDates(): List<LocalDate> = log.filter { it.success }.map { it.date.toLocalDate() }
+
 }
