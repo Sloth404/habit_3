@@ -1,0 +1,102 @@
+package com.moehr.habit_3
+
+import android.content.Intent
+import android.os.Bundle
+import android.widget.Button
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.moehr.habit_3.data.model.Habit
+import com.moehr.habit_3.data.model.HabitViewModelFactory
+import com.moehr.habit_3.data.repository.HabitRepository
+import com.moehr.habit_3.ui.tile_tracker.HabitCalendarAdapter
+import com.moehr.habit_3.ui.tile_tracker.HabitDay
+import com.moehr.habit_3.viewmodel.HabitViewModel
+import kotlinx.coroutines.launch
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.temporal.TemporalAdjusters
+
+class DetailActivity : AppCompatActivity() {
+
+    private lateinit var rvHabitCalendar: RecyclerView
+    private lateinit var tvDetailHabitName: TextView
+    private lateinit var tvDetailMessage: TextView
+    private lateinit var tvDetailMonth: TextView
+    private lateinit var editButton: Button
+
+    private lateinit var habitRepository: HabitRepository
+    private lateinit var habitViewModel: HabitViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_detail)
+
+        // Retrieve habit id from intent
+        val habitId = intent.getLongExtra("habit_id", -1L)
+        if (habitId == -1L) {
+            throw IllegalArgumentException("Habit ID is missing!")
+        }
+
+        // Init UI
+        initViews()
+
+        // Init ViewModel + Repository
+        habitRepository = HabitRepository()
+        val factory = HabitViewModelFactory(habitRepository)
+        habitViewModel = factory.create(HabitViewModel::class.java)
+
+        // Load Habit from repository (ideally ViewModel would do this directly)
+        lifecycleScope.launch {
+            val habit = habitRepository.getHabitById(habitId)
+            if (habit != null) {
+                updateUI(habit)
+            }
+        }
+    }
+
+    private fun initViews() {
+        rvHabitCalendar = findViewById(R.id.rvHabitCalendar)
+        tvDetailHabitName = findViewById(R.id.tvDetailHabitName)
+        tvDetailMessage = findViewById(R.id.tvDetailMessage)
+        tvDetailMonth = findViewById(R.id.tvDetailMonth)
+        editButton = findViewById(R.id.btnDetailEdit)
+    }
+
+    private fun updateUI(habit: Habit) {
+        tvDetailHabitName.text = habit.name
+        tvDetailMessage.text = habit.motivationalNote
+        tvDetailMonth.text = LocalDate.now().month.toString()
+
+        val calendarData = buildCalendar(habit)
+        rvHabitCalendar.layoutManager = GridLayoutManager(this, 7)
+        rvHabitCalendar.adapter = HabitCalendarAdapter(calendarData)
+
+        editButton.setOnClickListener {
+            val intent = Intent(this, EditHabitActivity::class.java)
+            intent.putExtra("habit_id", habit.id)
+            startActivity(intent)
+        }
+    }
+
+    private fun buildCalendar(habit: Habit): List<HabitDay> {
+        val today = LocalDate.now()
+        val startOfMonth = today.withDayOfMonth(1)
+        val habitStart = habit.createdAt.toLocalDate()
+        val successes = habit.getSuccessfulDates().toSet()
+
+        val firstMonday = startOfMonth.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        return (0 until 42).map { offset ->
+            val date = firstMonday.plusDays(offset.toLong())
+            HabitDay(
+                date = date,
+                isBeforeStart = date.isBefore(habitStart),
+                isSuccess = successes.contains(date),
+                isToday = date == today,
+                isCreatedAt = date == habitStart
+            )
+        }
+    }
+}

@@ -14,8 +14,14 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
 
-class StatisticsAdapter(private val habits: List<Habit>) :
-    RecyclerView.Adapter<StatisticsAdapter.StatisticsViewHolder>() {
+class StatisticsAdapter : RecyclerView.Adapter<StatisticsAdapter.StatisticsViewHolder>() {
+
+    private var habits: List<Habit> = emptyList()
+
+    fun submitList(newHabits: List<Habit>) {
+        habits = newHabits
+        notifyDataSetChanged()
+    }
 
     inner class StatisticsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvStatisticsHabitName: TextView = itemView.findViewById(R.id.tvStatisticsHabitName)
