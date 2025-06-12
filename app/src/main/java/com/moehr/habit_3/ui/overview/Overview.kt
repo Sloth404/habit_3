@@ -1,6 +1,6 @@
 package com.moehr.habit_3.ui.overview
 
-import com.moehr.habit_3.ui.detail.DetailActivity
+import com.moehr.habit_3.DetailActivity
 import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
@@ -10,24 +10,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.moehr.habit_3.EditHabitActivity
 import com.moehr.habit_3.R
 import com.moehr.habit_3.data.model.Habit
-import com.moehr.habit_3.data.model.dto.HabitLogEntryDTO
-import com.moehr.habit_3.data.model.HabitType
-import com.moehr.habit_3.data.model.dto.ReminderTimeDTO
-import com.moehr.habit_3.data.model.RepeatPattern
-import java.time.LocalDateTime
+import com.moehr.habit_3.viewmodel.HabitViewModel
+import com.moehr.habit_3.data.model.HabitViewModelFactory
+import com.moehr.habit_3.data.repository.HabitRepository
 import kotlin.reflect.KClass
 
 class Overview : Fragment() {
 
     private lateinit var adapter: HabitAdapter
-
-    private var actualHabits = mutableListOf<Habit>()  // placeholder for now
+    private lateinit var viewModel: HabitViewModel
+    private var habits: List<Habit> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,38 +34,10 @@ class Overview : Fragment() {
     ): View {
         val view = inflater.inflate(R.layout.fragment_overview, container, false)
 
-        // Mock data
-        actualHabits.add(
-            Habit(
-                id = 1L,
-                name = "Morning Jog",
-                type = HabitType.BUILD,
-                unit = "minutes",
-                repeat = RepeatPattern.DAILY,
-                reminders = listOf(
-                    ReminderTimeDTO(
-                        hour = 7,
-                        minute = 0
-                    )
-                ),
-                createdAt = LocalDateTime.now().minusDays(10),
-                motivationalNote = "Start your day with energy!",
-                log = listOf(
-                    HabitLogEntryDTO(
-                        date = LocalDateTime.now().minusDays(3),
-                        success = true
-                    ),
-                    HabitLogEntryDTO(
-                        date = LocalDateTime.now().minusDays(2),
-                        success = true
-                    ),
-                    HabitLogEntryDTO(
-                        date = LocalDateTime.now().minusDays(1),
-                        success = false
-                    )
-                )
-            )
-        )
+        // Initialize ViewModel with repository
+        val repository = HabitRepository()
+        val factory = HabitViewModelFactory(repository)
+        viewModel = ViewModelProvider(this, factory)[HabitViewModel::class.java]
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycleView)
 
@@ -75,8 +46,14 @@ class Overview : Fragment() {
             startActivity(Intent(requireContext(), target.java))
         }
 
-        recyclerView.setLayoutManager(LinearLayoutManager(requireContext()))
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
+
+        // Observe ViewModel LiveData
+        viewModel.habits.observe(viewLifecycleOwner) { updatedHabits ->
+            habits = updatedHabits
+            adapter.updateData(buildList())
+        }
 
         val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
 
@@ -90,16 +67,17 @@ class Overview : Fragment() {
                 val position = viewHolder.adapterPosition
 
                 if (adapter.getItemViewType(position) == HabitAdapter.TYPE_HABIT) {
-                    val habit = actualHabits[position]
+                    val habit = habits[position]
 
                     when (direction) {
                         ItemTouchHelper.LEFT -> {
-                            actualHabits.removeAt(position)
-                            adapter.updateData(buildList())
+                            // Delete habit via ViewModel
+                            viewModel.deleteHabit(habit)
                         }
                         ItemTouchHelper.RIGHT -> {
+                            // Open detail activity
                             val target: KClass<out DetailActivity> = DetailActivity::class
-                            startActivity(Intent(requireContext(), target.java).apply { putExtra("habit_data", habit) })
+                            startActivity(Intent(requireContext(), target.java).apply { putExtra("habit_id", habit.id) })
 
                             adapter.notifyItemChanged(position)
                         }
@@ -128,12 +106,10 @@ class Overview : Fragment() {
             ) {
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
                     val itemView = viewHolder.itemView
-                    val cornerRadius = itemView.resources.displayMetrics.density * 20 // 20dp
+                    val cornerRadius = itemView.resources.displayMetrics.density * 20
                     val top = itemView.top.toFloat()
                     val bottom = itemView.bottom.toFloat()
-
                     val path = android.graphics.Path()
-
                     val paint = Paint().apply {
                         color = if (dX > 0) Color.GREEN else Color.RED
                     }
@@ -144,71 +120,46 @@ class Overview : Fragment() {
 
                         path.apply {
                             moveTo(left, top)
-
-                            // top-right corner
                             lineTo(right - cornerRadius, top)
                             quadTo(right, top, right, top + cornerRadius)
-
-                            // bottom-right corner
                             lineTo(right, bottom - cornerRadius)
                             quadTo(right, bottom, right, bottom)
-
-                            // bottom-left corner
                             lineTo(left + cornerRadius, bottom)
-                            quadTo(left, bottom, left, bottom )
-
-                            // top-left corner
+                            quadTo(left, bottom, left, bottom)
                             lineTo(left - cornerRadius, top)
                             quadTo(left, top, left, top)
-
                             close()
                         }
-
                     } else if (dX > 0) {
                         val left = itemView.left.toFloat()
                         val right = itemView.left.toFloat() + dX
 
                         path.apply {
                             moveTo(left, top)
-
-                            // top-left corner
                             lineTo(left, top)
-
-                            // bottom-left corner
                             lineTo(left, bottom - cornerRadius)
                             quadTo(left, bottom, left + cornerRadius, bottom)
-
-                            // bottom-right corner
                             lineTo(right + cornerRadius, bottom)
-
-                            // top-right corner
                             lineTo(right, top)
-
                             close()
                         }
                     }
-
                     c.drawPath(path, paint)
                 }
-
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             }
-
-
         })
 
-
         itemTouchHelper.attachToRecyclerView(recyclerView)
-
         return view
     }
 
     private fun buildList(): List<HabitListItem> {
         val list = mutableListOf<HabitListItem>()
-        list.addAll(actualHabits.map { HabitListItem.HabitItem(it) })
+        list.addAll(habits.map { HabitListItem.HabitItem(it) })
 
-        if (actualHabits.size < 3) {
-            repeat(3 - actualHabits.size) {
+        if (habits.size < 3) {
+            repeat(3 - habits.size) {
                 list.add(HabitListItem.Placeholder)
             }
         }

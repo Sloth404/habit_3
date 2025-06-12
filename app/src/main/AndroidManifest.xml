@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".EditHabitActivity"/>
-        <activity android:name=".ui.detail.DetailActivity"/>
+        <activity android:name=".DetailActivity"/>
         <receiver android:name=".notification.HabitActionReceiver"/>
     </application>
 </manifest>

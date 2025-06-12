@@ -12,7 +12,7 @@ import com.moehr.habit_3.data.model.RepeatPattern
 import com.moehr.habit_3.ui.edit.EditItem
 
 class EditSectionAdapter(
-    private val items: MutableList<EditItem>
+    val items: MutableList<EditItem>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
