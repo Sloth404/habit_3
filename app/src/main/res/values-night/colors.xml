@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="dark_grey">#222220</color>
+    <color name="light_grey">#D7D7D5</color>
+    <color name="ghost_white">#F0F2EF</color>
+
+    <color name="torquoise">#84DCCF</color>
+    <color name="blue">#0D5A66</color>
+
+    <color name="item_one">#b2f2bb</color>
+    <color name="item_two">#ffec99</color>
+    <color name="item_three">#a5d8ff</color>
+
+    <color name="button_cancel">#e03131</color>
+    <color name="button_save">#2f9e44</color>
+
+    <color name="button_cancel_light">#ffc9c9</color>
+    <color name="button_save_light">#b2f2bb</color>
+</resources>
