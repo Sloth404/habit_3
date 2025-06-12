@@ -1,5 +1,7 @@
 package com.moehr.habit_3.data.model
 
+import com.moehr.habit_3.data.model.dto.HabitLogEntryDTO
+import com.moehr.habit_3.data.model.dto.ReminderTimeDTO
 import java.io.Serializable
 import java.time.LocalDate
 import java.time.LocalDateTime

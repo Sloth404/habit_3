@@ -1,4 +1,4 @@
-package com.moehr.habit_3.data.model
+package com.moehr.habit_3.data.model.dto
 
 import java.io.Serializable
 import java.time.LocalTime

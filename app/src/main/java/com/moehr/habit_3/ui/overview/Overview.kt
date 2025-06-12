@@ -16,9 +16,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.moehr.habit_3.EditHabitActivity
 import com.moehr.habit_3.R
 import com.moehr.habit_3.data.model.Habit
-import com.moehr.habit_3.data.model.HabitLogEntryDTO
+import com.moehr.habit_3.data.model.dto.HabitLogEntryDTO
 import com.moehr.habit_3.data.model.HabitType
-import com.moehr.habit_3.data.model.ReminderTimeDTO
+import com.moehr.habit_3.data.model.dto.ReminderTimeDTO
 import com.moehr.habit_3.data.model.RepeatPattern
 import java.time.LocalDateTime
 import kotlin.reflect.KClass
