@@ -1,6 +1,7 @@
 package com.moehr.habit_3.ui.settings
 
 import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Switch
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.moehr.habit_3.R
 import com.moehr.habit_3.data.preferences.SharedPreferencesManager
@@ -46,23 +48,13 @@ class SettingsFragment : Fragment() {
         pushSection.visibility = View.GONE
         themeSection.visibility = View.GONE
 
-        iconSwitch = view.findViewById(R.id.switch_icon)
         appSwitch = view.findViewById(R.id.switch_app)
 
         btnSettingsSave = view.findViewById(R.id.btnSettingsSave)
 
-        iconSwitch.setOnCheckedChangeListener { _, isChecked ->
-            when (isChecked) {
-                true -> iconSwitch.text = R.string.settings_dark.toString()
-                false -> iconSwitch.text = R.string.settings_light.toString()
-            }
-        }
-
         appSwitch.setOnCheckedChangeListener { _, isChecked ->
-            when (isChecked) {
-                true -> appSwitch.text = R.string.settings_dark.toString()
-                false -> appSwitch.text = R.string.settings_light.toString()
-            }
+            appSwitch.text = if (isChecked) getString(R.string.settings_dark) else getString(R.string.settings_light)
+            SharedPreferencesManager.setTheme(requireContext(), if (isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO)
         }
 
         btnSettingsSave.setOnClickListener {
@@ -76,6 +68,10 @@ class SettingsFragment : Fragment() {
         view.findViewById<TextView>(R.id.textView18).setOnClickListener {
             showInspirationDialog()
         }
+
+        val prefs = requireContext().getSharedPreferences("habit3_prefs", Context.MODE_PRIVATE)
+        val isDark = prefs.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) == AppCompatDelegate.MODE_NIGHT_YES
+        appSwitch.isChecked = isDark
 
         setupToggleSections()
         return view
