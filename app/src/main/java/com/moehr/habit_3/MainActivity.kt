@@ -13,21 +13,27 @@ import com.moehr.habit_3.ui.settings.SettingsFragment
 import com.moehr.habit_3.ui.statistics.Statistics
 
 class MainActivity : AppCompatActivity() {
+
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply saved theme preference before setting content view
         SharedPreferencesManager.loadTheme(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Initialize BottomNavigationView
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_nav)
-        bottomNavigationView.itemIconTintList = null
+        bottomNavigationView.itemIconTintList = null // Keep original icon colors
 
+        // Instantiate fragments
         val overviewFragment = Overview()
         val statisticsFragment = Statistics()
         val settingsFragment = SettingsFragment()
 
+        // Set default fragment
         setCurrentFragment(overviewFragment)
 
+        // Set navigation item selection behavior
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.menu_overview -> setCurrentFragment(overviewFragment)
@@ -38,17 +44,25 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
+        // Ensure the correct menu item is selected
         bottomNavigationView.selectedItemId = R.id.menu_overview
 
+        // Request POST_NOTIFICATIONS permission if necessary
         requestNotificationPermission()
     }
 
+    /**
+     * Replaces the current fragment in the main container.
+     */
     private fun setCurrentFragment(fragment: Fragment) =
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.main, fragment)
             commit()
         }
 
+    /**
+     * Requests notification permission for Android 13+ devices.
+     */
     private fun requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
