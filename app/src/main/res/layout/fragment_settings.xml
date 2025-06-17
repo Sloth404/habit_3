@@ -2,6 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:padding="16dp">
 
     <TextView
@@ -265,12 +266,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
-        android:fontFamily="@font/jetbrains_mono"
-        android:textColor="@color/dark_grey"
-        android:textSize="16sp"
-        android:text="@string/credits_underlined"
         android:clickable="true"
         android:focusable="true"
+        android:fontFamily="@font/jetbrains_mono"
+        android:text="@string/credits_underlined"
+        android:textColor="@color/dark_grey"
+        android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/textView18"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -297,6 +298,7 @@
         android:layout_marginBottom="130dp"
         android:backgroundTint="@color/dark_grey"
         android:text="@string/edit_btn_save"
+        android:textColor="@color/white"
         app:cornerRadius="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

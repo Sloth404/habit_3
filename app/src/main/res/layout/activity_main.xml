@@ -11,12 +11,13 @@
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
         android:layout_height="115dp"
+        android:background="@drawable/bg_menu"
         app:itemIconSize="50dp"
+        app:itemIconTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_nav_menu"
-        app:itemIconTint="@null"/>
+        app:menu="@menu/bottom_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

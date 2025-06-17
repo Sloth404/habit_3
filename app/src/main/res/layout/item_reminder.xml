@@ -51,6 +51,7 @@
             android:backgroundTint="@color/dark_grey"
             android:fontFamily="@font/jetbrains_mono"
             android:text="@string/edit_section_morning"
+            android:textColor="@color/white"
             app:cornerRadius="8dp" />
 
         <Button
@@ -63,6 +64,7 @@
             android:backgroundTint="@color/dark_grey"
             android:fontFamily="@font/jetbrains_mono"
             android:text="@string/edit_section_noon"
+            android:textColor="@color/white"
             app:cornerRadius="8dp" />
 
         <Button
@@ -74,6 +76,7 @@
             android:backgroundTint="@color/dark_grey"
             android:fontFamily="@font/jetbrains_mono"
             android:text="@string/edit_section_evening"
+            android:textColor="@color/white"
             app:cornerRadius="8dp" />
     </LinearLayout>
 
@@ -87,6 +90,7 @@
         android:layout_marginBottom="16dp"
         android:backgroundTint="@color/dark_grey"
         android:text="@string/edit_section_custom"
+        android:textColor="@color/white"
         app:cornerRadius="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
