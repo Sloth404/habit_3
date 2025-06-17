@@ -7,6 +7,7 @@ import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.moehr.habit_3.data.preferences.SharedPreferencesManager
 import com.moehr.habit_3.ui.overview.Overview
 import com.moehr.habit_3.ui.settings.SettingsFragment
 import com.moehr.habit_3.ui.statistics.Statistics
@@ -14,6 +15,7 @@ import com.moehr.habit_3.ui.statistics.Statistics
 class MainActivity : AppCompatActivity() {
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override fun onCreate(savedInstanceState: Bundle?) {
+        SharedPreferencesManager.loadTheme(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
