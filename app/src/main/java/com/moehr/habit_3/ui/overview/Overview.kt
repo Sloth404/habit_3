@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -20,6 +21,9 @@ import com.moehr.habit_3.data.model.Habit
 import com.moehr.habit_3.viewmodel.HabitViewModel
 import com.moehr.habit_3.data.model.HabitViewModelFactory
 import com.moehr.habit_3.data.repository.HabitRepository
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 import kotlin.reflect.KClass
 
 class Overview : Fragment() {
@@ -54,6 +58,36 @@ class Overview : Fragment() {
             habits = updatedHabits
             adapter.updateData(buildList())
         }
+
+        val tvMonth = view.findViewById<TextView>(R.id.tvMonth)
+        val tvPrevWeekNames = view.findViewById<TextView>(R.id.tvPrevWeekNames)
+        val tvPrevWeekNumbers = view.findViewById<TextView>(R.id.tvPrevWeekNumbers)
+
+        // Set current month
+        val calendar = Calendar.getInstance()
+        val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
+        tvMonth.text = monthFormat.format(calendar.time)
+
+        // Set next 7 day abbreviations and numbers
+        val dayAbbrevFormat = SimpleDateFormat("EE", Locale.ENGLISH)
+        val dayNumberFormat = SimpleDateFormat("dd", Locale.getDefault())
+
+        val dayNames = StringBuilder()
+        val dayNumbers = StringBuilder()
+
+        for (i in 0 until 7) {
+            val day = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, i) }
+
+            val abbrev = dayAbbrevFormat.format(day.time).take(2).lowercase().replaceFirstChar { it.uppercase() }
+            val dayNum = dayNumberFormat.format(day.time)
+
+            dayNames.append(abbrev).append(" ")
+            dayNumbers.append(dayNum).append(" ")
+        }
+
+        tvPrevWeekNames.text = dayNames.toString().trim()
+        tvPrevWeekNumbers.text = dayNumbers.toString().trim()
+
 
         val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
 
