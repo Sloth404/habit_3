@@ -11,39 +11,46 @@ import androidx.recyclerview.widget.RecyclerView
 import com.moehr.habit_3.R
 import com.moehr.habit_3.data.model.Habit
 import com.moehr.habit_3.data.model.HabitType
-import com.moehr.habit_3.viewmodel.HabitViewModel
 import com.moehr.habit_3.data.model.HabitViewModelFactory
 import com.moehr.habit_3.data.model.RepeatPattern
 import com.moehr.habit_3.data.model.dto.HabitLogEntryDTO
 import com.moehr.habit_3.data.repository.HabitRepository
+import com.moehr.habit_3.viewmodel.HabitViewModel
 import java.time.LocalDateTime
 
+/**
+ * Fragment displaying statistics for habits in a RecyclerView.
+ */
 class Statistics : Fragment() {
 
     private lateinit var viewModel: HabitViewModel
     private lateinit var adapter: StatisticsAdapter
+
+    // Current list of habits displayed
     private var habits: List<Habit> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // Inflate fragment layout
         val view = inflater.inflate(R.layout.fragment_statistics, container, false)
 
+        // Setup RecyclerView with LinearLayoutManager and adapter
         val rvStatistics = view.findViewById<RecyclerView>(R.id.rvStatistics)
         rvStatistics.layoutManager = LinearLayoutManager(requireContext())
-
         adapter = StatisticsAdapter()
         rvStatistics.adapter = adapter
 
+        // Initially submit padded habits list (may be empty)
         adapter.submitList(padHabits(habits))
 
-        // Initialize ViewModel
+        // Initialize ViewModel with repository and factory
         val repository = HabitRepository()
         val factory = HabitViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory)[HabitViewModel::class.java]
 
-        // Observe habits
+        // Observe LiveData habits list and update adapter on changes
         viewModel.habits.observe(viewLifecycleOwner) { updatedHabits ->
             habits = updatedHabits
             adapter.submitList(padHabits(habits))
@@ -52,6 +59,9 @@ class Statistics : Fragment() {
         return view
     }
 
+    /**
+     * Ensures the habit list has at least 3 items by adding placeholders if needed.
+     */
     private fun padHabits(habits: List<Habit>): List<Habit> {
         val padded = habits.toMutableList()
         while (padded.size < 3) {
@@ -60,18 +70,19 @@ class Statistics : Fragment() {
         return padded
     }
 
-    private fun createPlaceholderHabit(): Habit {
-        return Habit(
-            id = -1L,
-            name = "Coming Soon",
-            type = HabitType.BUILD,
-            unit = "",
-            repeat = RepeatPattern.DAILY,
-            reminders = emptyList(),
-            createdAt = LocalDateTime.now(),
-            motivationalNote = "",
-            log = emptyList<HabitLogEntryDTO>(),
-            target = 0
-        )
-    }
+    /**
+     * Creates a placeholder habit shown as "Coming Soon" in the UI.
+     */
+    private fun createPlaceholderHabit(): Habit = Habit(
+        id = -1L,
+        name = "Coming Soon",
+        type = HabitType.BUILD,
+        unit = "",
+        repeat = RepeatPattern.DAILY,
+        reminders = emptyList(),
+        createdAt = LocalDateTime.now(),
+        motivationalNote = "",
+        log = emptyList<HabitLogEntryDTO>(),
+        target = 0
+    )
 }

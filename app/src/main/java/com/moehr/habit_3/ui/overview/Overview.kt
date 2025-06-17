@@ -1,6 +1,5 @@
 package com.moehr.habit_3.ui.overview
 
-import com.moehr.habit_3.DetailActivity
 import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
@@ -15,17 +14,23 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.moehr.habit_3.DetailActivity
 import com.moehr.habit_3.EditHabitActivity
 import com.moehr.habit_3.R
 import com.moehr.habit_3.data.model.Habit
-import com.moehr.habit_3.viewmodel.HabitViewModel
 import com.moehr.habit_3.data.model.HabitViewModelFactory
 import com.moehr.habit_3.data.repository.HabitRepository
+import com.moehr.habit_3.viewmodel.HabitViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import kotlin.reflect.KClass
 
+/**
+ * Fragment showing an overview of habits.
+ * Displays habit list with swipe actions for deleting or viewing details.
+ * Shows current month and next 7 days with abbreviations.
+ */
 class Overview : Fragment() {
 
     private lateinit var adapter: HabitAdapter
@@ -36,49 +41,84 @@ class Overview : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_overview, container, false)
 
-        // Initialize ViewModel with repository
+        // Initialize ViewModel with repository and factory
         val repository = HabitRepository()
         val factory = HabitViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory)[HabitViewModel::class.java]
 
+        // Setup RecyclerView and its adapter
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycleView)
-
         adapter = HabitAdapter(buildList()) {
+            // Open EditHabitActivity on item click
             val target: KClass<out EditHabitActivity> = EditHabitActivity::class
             startActivity(Intent(requireContext(), target.java))
         }
-
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
 
-        // Observe ViewModel LiveData
+        // Observe habits LiveData from ViewModel and update UI on changes
         viewModel.habits.observe(viewLifecycleOwner) { updatedHabits ->
             habits = updatedHabits
             adapter.updateData(buildList())
         }
 
+        // Setup UI text views for month and days display
+        setupDateDisplays(view)
+
+        // Attach swipe actions to RecyclerView items
+        setupSwipeActions(recyclerView)
+
+        return view
+    }
+
+    /**
+     * Builds a list of HabitListItems from habits data,
+     * padding with placeholders if less than 3 items.
+     */
+    private fun buildList(): List<HabitListItem> {
+        val list = mutableListOf<HabitListItem>()
+        list.addAll(habits.map { HabitListItem.HabitItem(it) })
+
+        // Add placeholders to ensure minimum 3 list items for consistent UI
+        if (habits.size < 3) {
+            repeat(3 - habits.size) {
+                list.add(HabitListItem.Placeholder)
+            }
+        }
+        return list
+    }
+
+    /**
+     * Initializes and sets the current month and next 7 days with abbreviated names and numbers.
+     */
+    private fun setupDateDisplays(view: View) {
         val tvMonth = view.findViewById<TextView>(R.id.tvMonth)
         val tvPrevWeekNames = view.findViewById<TextView>(R.id.tvPrevWeekNames)
         val tvPrevWeekNumbers = view.findViewById<TextView>(R.id.tvPrevWeekNumbers)
 
-        // Set current month
         val calendar = Calendar.getInstance()
         val monthFormat = SimpleDateFormat("MMMM", Locale.getDefault())
         tvMonth.text = monthFormat.format(calendar.time)
 
-        // Set next 7 day abbreviations and numbers
-        val dayAbbrevFormat = SimpleDateFormat("EE", Locale.ENGLISH)
+        val dayAbbrevFormat = SimpleDateFormat("EE", Locale.ENGLISH)  // e.g. Mo, Tu
         val dayNumberFormat = SimpleDateFormat("dd", Locale.getDefault())
 
         val dayNames = StringBuilder()
         val dayNumbers = StringBuilder()
 
+        // Loop through next 7 days including today
         for (i in 0 until 7) {
             val day = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, i) }
 
-            val abbrev = dayAbbrevFormat.format(day.time).take(2).lowercase().replaceFirstChar { it.uppercase() }
+            // Format day abbreviation: take first 2 letters, capitalize first
+            val abbrev = dayAbbrevFormat.format(day.time)
+                .take(2)
+                .lowercase()
+                .replaceFirstChar { it.uppercase() }
+
             val dayNum = dayNumberFormat.format(day.time)
 
             dayNames.append(abbrev).append(" ")
@@ -87,19 +127,28 @@ class Overview : Fragment() {
 
         tvPrevWeekNames.text = dayNames.toString().trim()
         tvPrevWeekNumbers.text = dayNumbers.toString().trim()
+    }
 
-
-        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+    /**
+     * Sets up swipe gestures on RecyclerView items.
+     * Left swipe deletes a habit, right swipe opens detail view.
+     * Swipe disabled on placeholder items.
+     * Custom background colors for swipe feedback.
+     */
+    private fun setupSwipeActions(recyclerView: RecyclerView) {
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
 
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
-            ): Boolean = false
+            ): Boolean = false  // No drag & drop support
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
 
+                // Handle only if the item is a real habit, not a placeholder
                 if (adapter.getItemViewType(position) == HabitAdapter.TYPE_HABIT) {
                     val habit = habits[position]
 
@@ -109,21 +158,29 @@ class Overview : Fragment() {
                             viewModel.deleteHabit(habit)
                         }
                         ItemTouchHelper.RIGHT -> {
-                            // Open detail activity
+                            // Open DetailActivity to show habit details
                             val target: KClass<out DetailActivity> = DetailActivity::class
-                            startActivity(Intent(requireContext(), target.java).apply { putExtra("habit_id", habit.id) })
+                            startActivity(Intent(requireContext(), target.java).apply {
+                                putExtra("habit_id", habit.id)
+                            })
 
+                            // Reset swiped item to avoid removal from list
                             adapter.notifyItemChanged(position)
                         }
                     }
                 } else {
+                    // Reset placeholder item swipe state
                     adapter.notifyItemChanged(position)
                 }
             }
 
-            override fun getSwipeDirs(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+            override fun getSwipeDirs(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
+                // Disable swipe gestures on placeholder items
                 return if (adapter.getItemViewType(viewHolder.adapterPosition) == HabitAdapter.TYPE_PLACEHOLDER) {
-                    0 // Disable swipe for placeholder
+                    0
                 } else {
                     super.getSwipeDirs(recyclerView, viewHolder)
                 }
@@ -141,14 +198,16 @@ class Overview : Fragment() {
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
                     val itemView = viewHolder.itemView
                     val cornerRadius = itemView.resources.displayMetrics.density * 20
+
                     val top = itemView.top.toFloat()
                     val bottom = itemView.bottom.toFloat()
-                    val path = android.graphics.Path()
                     val paint = Paint().apply {
                         color = if (dX > 0) Color.GREEN else Color.RED
                     }
+                    val path = android.graphics.Path()
 
                     if (dX < 0) {
+                        // Swipe left — draw red background with rounded corners
                         val left = itemView.right.toFloat() + dX
                         val right = itemView.right.toFloat()
 
@@ -165,6 +224,7 @@ class Overview : Fragment() {
                             close()
                         }
                     } else if (dX > 0) {
+                        // Swipe right — draw green background with rounded corners
                         val left = itemView.left.toFloat()
                         val right = itemView.left.toFloat() + dX
 
@@ -178,25 +238,15 @@ class Overview : Fragment() {
                             close()
                         }
                     }
+
                     c.drawPath(path, paint)
                 }
+
+                // Draw default swipe behavior (translation)
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             }
         })
 
         itemTouchHelper.attachToRecyclerView(recyclerView)
-        return view
-    }
-
-    private fun buildList(): List<HabitListItem> {
-        val list = mutableListOf<HabitListItem>()
-        list.addAll(habits.map { HabitListItem.HabitItem(it) })
-
-        if (habits.size < 3) {
-            repeat(3 - habits.size) {
-                list.add(HabitListItem.Placeholder)
-            }
-        }
-        return list
     }
 }

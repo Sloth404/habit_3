@@ -4,17 +4,40 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
 
+/**
+ * Helper class to manage app preferences related to push notification times and theme settings.
+ *
+ * Uses SharedPreferences to persist user settings.
+ */
 class SharedPreferencesManager {
+
     companion object {
+        // Name of the SharedPreferences file
         private const val PREFS_NAME = "habit3_prefs"
+
+        // Keys for storing push notification times as Strings
         private const val KEY_PUSH_MORNING = "push_morning"
         private const val KEY_PUSH_NOON = "push_noon"
         private const val KEY_PUSH_EVENING = "push_evening"
         private const val KEY_PUSH_CUSTOM = "push_custom"
-        private const val KEY_ICON = "icon_theme"
-        private const val KEY_APP = "app_theme"
-        private const val KEY_THEME = "theme_mode"
 
+        // Keys for theme preferences
+        private const val KEY_ICON = "icon_theme"  // Boolean for icon theme (dark/light)
+        private const val KEY_APP = "app_theme"    // Boolean for app theme (dark/light)
+        private const val KEY_THEME = "theme_mode" // Int for actual theme mode applied
+
+        /**
+         * Saves push notification times and theme preferences to SharedPreferences.
+         * Also applies the selected theme immediately.
+         *
+         * @param context Context to access SharedPreferences and apply theme.
+         * @param pushMorning Time string for morning notification.
+         * @param pushNoon Time string for noon notification.
+         * @param pushEvening Time string for evening notification.
+         * @param pushCustom Time string for custom notification.
+         * @param icon Boolean indicating icon theme preference (dark or light).
+         * @param app Boolean indicating app theme preference (dark or light).
+         */
         fun saveSettings(
             context: Context,
             pushMorning: String,
@@ -25,6 +48,8 @@ class SharedPreferencesManager {
             app: Boolean
         ) {
             val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+            // Save all preferences atomically
             prefs.edit().apply {
                 putString(KEY_PUSH_MORNING, pushMorning)
                 putString(KEY_PUSH_NOON, pushNoon)
@@ -35,17 +60,35 @@ class SharedPreferencesManager {
                 apply()
             }
 
-            val isDarkMode = icon
-            val mode = if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+            // Determine night mode based on icon theme preference
+            val mode = if (icon) {
+                AppCompatDelegate.MODE_NIGHT_YES
+            } else {
+                AppCompatDelegate.MODE_NIGHT_NO
+            }
+
+            // Apply theme mode immediately and save it
             setTheme(context, mode)
         }
 
+        /**
+         * Loads the saved theme mode from preferences and applies it.
+         * Defaults to follow system setting if no preference found.
+         *
+         * @param context Context to access SharedPreferences.
+         */
         fun loadTheme(context: Context) {
             val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             val mode = prefs.getInt(KEY_THEME, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
             AppCompatDelegate.setDefaultNightMode(mode)
         }
 
+        /**
+         * Applies the given theme mode and persists it in preferences.
+         *
+         * @param context Context to access SharedPreferences.
+         * @param mode The night mode to apply (e.g. MODE_NIGHT_YES, MODE_NIGHT_NO).
+         */
         fun setTheme(context: Context, mode: Int) {
             AppCompatDelegate.setDefaultNightMode(mode)
             context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit {
@@ -53,5 +96,4 @@ class SharedPreferencesManager {
             }
         }
     }
-
 }

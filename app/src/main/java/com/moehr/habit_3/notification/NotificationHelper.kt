@@ -12,54 +12,82 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.moehr.habit_3.R
 
+/**
+ * Helper class to manage notification channels and display notifications related to habits.
+ */
 class NotificationHelper {
+
+    /**
+     * Creates a notification channel on devices running Android O (API 26) or higher.
+     * This is required to send notifications on newer Android versions.
+     *
+     * @param context Application context used to access system services.
+     */
     fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Define the notification channel with ID, name, and importance level
             val channel = NotificationChannel(
-                "habit_channel",
+                CHANNEL_ID,
                 "Habit Notification",
                 NotificationManager.IMPORTANCE_DEFAULT
             ).apply {
                 description = "Notifications for Habit^3"
             }
 
-            val notificationManager: NotificationManager =
+            // Register the channel with the system notification manager
+            val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
 
+    /**
+     * Displays a motivational notification.
+     *
+     * Requires POST_NOTIFICATIONS permission on Android 13+.
+     *
+     * @param context Application context to build and show the notification.
+     */
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     fun showMotivationalNotification(context: Context) {
-        val builder = NotificationCompat.Builder(context, "habit_channel")
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.logo_svg)
             .setContentTitle(context.getString(R.string.app_name))
             .setContentText(context.getString(R.string.motivation_text))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
-        val notificationManager = NotificationManagerCompat.from(context)
-        notificationManager.notify(1, builder.build())
+        NotificationManagerCompat.from(context).notify(MOTIVATION_NOTIFICATION_ID, builder.build())
     }
 
+    /**
+     * Displays a reminder notification with actionable buttons for user interaction.
+     *
+     * Requires POST_NOTIFICATIONS permission on Android 13+.
+     *
+     * @param context Application context used to build and show the notification.
+     */
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     fun showReminderNotification(context: Context) {
+        // Intent triggered when user indicates they did the habit
         val didDoItIntent = Intent(context, HabitActionReceiver::class.java).apply {
-            action = "ACTION_DID_DO_IT"
+            action = ACTION_DID_DO_IT
         }
-
         val didDoItPendingIntent = PendingIntent.getBroadcast(
-            context, 0, didDoItIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            context, 0, didDoItIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        // Intent triggered when user indicates they didn't do the habit
         val didntDoItIntent = Intent(context, HabitActionReceiver::class.java).apply {
-            action = "ACTION_DID_NOT_DO_IT"
+            action = ACTION_DID_NOT_DO_IT
         }
-
         val didntDoItPendingIntent = PendingIntent.getBroadcast(
-            context, 1, didntDoItIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            context, 1, didntDoItIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val builder = NotificationCompat.Builder(context, "habit_channel")
+        // Build notification with two action buttons
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.logo_svg)
             .setContentTitle(context.getString(R.string.app_name))
             .setContentText(context.getString(R.string.reminder_text))
@@ -67,7 +95,19 @@ class NotificationHelper {
             .addAction(R.drawable.ic_overview, context.getString(R.string.did_it), didDoItPendingIntent)
             .addAction(R.drawable.ic_statistics, context.getString(R.string.didnt_do_it), didntDoItPendingIntent)
 
-        val notificationManager = NotificationManagerCompat.from(context)
-        notificationManager.notify(2, builder.build())
+        NotificationManagerCompat.from(context).notify(REMINDER_NOTIFICATION_ID, builder.build())
+    }
+
+    companion object {
+        // Notification channel ID used for all habit notifications
+        private const val CHANNEL_ID = "habit_channel"
+
+        // Notification IDs to distinguish different notifications
+        private const val MOTIVATION_NOTIFICATION_ID = 1
+        private const val REMINDER_NOTIFICATION_ID = 2
+
+        // Intent action strings to identify user responses
+        const val ACTION_DID_DO_IT = "ACTION_DID_DO_IT"
+        const val ACTION_DID_NOT_DO_IT = "ACTION_DID_NOT_DO_IT"
     }
 }
