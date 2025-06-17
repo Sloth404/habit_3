@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/jetbrains_mono"
         android:text="@string/dialog_cancel_title"
+        android:textColor="@color/dark_grey"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -38,7 +39,7 @@
             android:backgroundTint="@color/button_save_light"
             android:fontFamily="@font/jetbrains_mono"
             android:text="@string/dialog_cancel_stay"
-            android:textColor="@color/dark_grey"
+            android:textColor="@color/black"
             app:cornerRadius="8dp" />
 
         <Button
@@ -49,7 +50,7 @@
             android:backgroundTint="@color/button_cancel_light"
             android:fontFamily="@font/jetbrains_mono"
             android:text="@string/dialog_cancel_leave"
-            android:textColor="@color/dark_grey"
+            android:textColor="@color/black"
             app:cornerRadius="8dp" />
     </LinearLayout>
 </LinearLayout>
