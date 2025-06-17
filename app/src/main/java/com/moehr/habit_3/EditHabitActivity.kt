@@ -24,6 +24,7 @@ import java.time.LocalDateTime
 
 class EditHabitActivity : AppCompatActivity() {
 
+    // UI components
     private lateinit var tvState: TextView
     private lateinit var etName: EditText
     private lateinit var etMessage: EditText
@@ -31,9 +32,10 @@ class EditHabitActivity : AppCompatActivity() {
     private lateinit var btnCancel: Button
     private lateinit var btnSave: Button
 
+    // Data and logic
     private lateinit var habitRepository: HabitRepository
     private lateinit var habitViewModel: HabitViewModel
-    private var currentHabit: Habit? = null  // Keep reference to loaded habit
+    private var currentHabit: Habit? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,14 +48,13 @@ class EditHabitActivity : AppCompatActivity() {
         val factory = HabitViewModelFactory(habitRepository)
         habitViewModel = factory.create(HabitViewModel::class.java)
 
+        // Load habit if editing an existing one
         if (habitId != -1L) {
-            // We're editing an existing habit → load it
             lifecycleScope.launch {
                 currentHabit = habitRepository.getHabitById(habitId)
                 populateUI(currentHabit)
             }
         } else {
-            // We're creating a new habit
             populateUI(null)
         }
 
@@ -61,6 +62,9 @@ class EditHabitActivity : AppCompatActivity() {
         btnSave.setOnClickListener { checkInputs() }
     }
 
+    /**
+     * Initialize UI views.
+     */
     private fun initViews() {
         tvState = findViewById(R.id.tvState)
         etName = findViewById(R.id.etHabitName)
@@ -70,21 +74,21 @@ class EditHabitActivity : AppCompatActivity() {
         btnSave = findViewById(R.id.btnEditSave)
     }
 
+    /**
+     * Populate the UI with habit data or show defaults for new habit.
+     */
     private fun populateUI(habit: Habit?) {
-        if (habit == null) {
-            tvState.setText(R.string.edit_tvState_create)
-            btnSave.setText(R.string.edit_btn_create)
-        } else {
-            tvState.setText(R.string.edit_tvState_edit)
-            btnSave.setText(R.string.edit_btn_save)
-        }
+        // Update labels depending on whether we're editing or creating
+        tvState.setText(if (habit == null) R.string.edit_tvState_create else R.string.edit_tvState_edit)
+        btnSave.setText(if (habit == null) R.string.edit_btn_create else R.string.edit_btn_save)
 
+        // Prepare UI sections for editing
         val items: MutableList<EditItem> = mutableListOf(
             EditItem.HabitTypeContent(
                 habitType = habit?.type ?: HabitType.BUILD,
                 repeatPattern = habit?.repeat ?: RepeatPattern.DAILY,
                 unit = habit?.unit ?: "",
-                target = 1  // Default for now
+                target = 1
             ),
             EditItem.ReminderContent(
                 pushEnabled = habit?.reminders?.isNotEmpty() ?: false,
@@ -102,24 +106,28 @@ class EditHabitActivity : AppCompatActivity() {
         etName.setText(habit?.name ?: "")
         etMessage.setText(habit?.motivationalNote ?: "")
 
-        val adapter = EditSectionAdapter(items)
+        // Setup RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = adapter
+        recyclerView.adapter = EditSectionAdapter(items)
     }
 
+    /**
+     * Show confirmation dialog when user attempts to cancel editing.
+     */
     private fun showCancelConfirmationDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_cancel, null)
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
             .create()
+            .apply {
+                window?.setBackgroundDrawableResource(android.R.color.transparent)
+            }
 
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialogView.findViewById<Button>(R.id.btnStay).setOnClickListener {
+            dialog.dismiss()
+        }
 
-        val btnStay = dialogView.findViewById<Button>(R.id.btnStay)
-        val btnLeave = dialogView.findViewById<Button>(R.id.btnLeave)
-
-        btnStay.setOnClickListener { dialog.dismiss() }
-        btnLeave.setOnClickListener {
+        dialogView.findViewById<Button>(R.id.btnLeave).setOnClickListener {
             dialog.dismiss()
             finish()
         }
@@ -127,6 +135,9 @@ class EditHabitActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    /**
+     * Validate inputs before saving.
+     */
     private fun checkInputs() {
         val name = etName.text.toString()
         val message = etMessage.text.toString()
@@ -144,8 +155,12 @@ class EditHabitActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Build and persist a habit object based on current UI state.
+     */
     private fun saveHabit(name: String, message: String) {
         val adapter = recyclerView.adapter as? EditSectionAdapter ?: return
+
         val habitTypeContent = adapter.items.find { it is EditItem.HabitTypeContent } as? EditItem.HabitTypeContent
         val reminderContent = adapter.items.find { it is EditItem.ReminderContent } as? EditItem.ReminderContent
 
@@ -168,10 +183,9 @@ class EditHabitActivity : AppCompatActivity() {
                     "MORNING" -> 7
                     "NOON" -> 12
                     "EVENING" -> 19
-                    else -> 0 // CUSTOM or default
+                    else -> 0
                 }
-                val minute = 0
-                reminders.add(ReminderTimeDTO(hour, minute))
+                reminders.add(ReminderTimeDTO(hour, 0))
             }
         }
 
@@ -186,7 +200,7 @@ class EditHabitActivity : AppCompatActivity() {
             target = target,
             reminders = reminders
         ) ?: Habit(
-            id = 0L, // Assuming 0 means new and will be auto-assigned
+            id = 0L,
             name = name,
             motivationalNote = message,
             type = habitType,
@@ -198,6 +212,7 @@ class EditHabitActivity : AppCompatActivity() {
             log = emptyList()
         )
 
+        // Save habit via ViewModel
         if (currentHabit != null) {
             habitViewModel.updateHabit(habitToSave)
             Toast.makeText(this, "Habit updated", Toast.LENGTH_SHORT).show()
