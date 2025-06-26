@@ -8,13 +8,13 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.moehr.habit_3.MainApplication
 import com.moehr.habit_3.R
 import com.moehr.habit_3.data.model.Habit
 import com.moehr.habit_3.data.model.HabitType
 import com.moehr.habit_3.data.model.HabitViewModelFactory
 import com.moehr.habit_3.data.model.RepeatPattern
 import com.moehr.habit_3.data.model.dto.HabitLogEntryDTO
-import com.moehr.habit_3.data.repository.HabitRepository
 import com.moehr.habit_3.viewmodel.HabitViewModel
 import java.time.LocalDateTime
 
@@ -25,6 +25,7 @@ class Statistics : Fragment() {
 
     private lateinit var viewModel: HabitViewModel
     private lateinit var adapter: StatisticsAdapter
+    private lateinit var app : MainApplication
 
     // Current list of habits displayed
     private var habits: List<Habit> = emptyList()
@@ -36,6 +37,9 @@ class Statistics : Fragment() {
         // Inflate fragment layout
         val view = inflater.inflate(R.layout.fragment_statistics, container, false)
 
+        // Retrieve application
+        app = requireActivity().application as MainApplication
+
         // Setup RecyclerView with LinearLayoutManager and adapter
         val rvStatistics = view.findViewById<RecyclerView>(R.id.rvStatistics)
         rvStatistics.layoutManager = LinearLayoutManager(requireContext())
@@ -46,8 +50,7 @@ class Statistics : Fragment() {
         adapter.submitList(padHabits(habits))
 
         // Initialize ViewModel with repository and factory
-        val repository = HabitRepository()
-        val factory = HabitViewModelFactory(repository)
+        val factory = HabitViewModelFactory(app.habitRepository)
         viewModel = ViewModelProvider(this, factory)[HabitViewModel::class.java]
 
         // Observe LiveData habits list and update adapter on changes

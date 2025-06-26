@@ -41,7 +41,7 @@ class DetailActivity : AppCompatActivity() {
             throw IllegalArgumentException("Habit ID is missing!")
         }
 
-        // Retrieve Application
+        // Retrieve application
         app = application as MainApplication
 
         // Init UI
