@@ -40,10 +40,15 @@ class EditHabitActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
 
+        // Retrieve Application
+        app = application as MainApplication
+
+        // Init UI
         initViews()
 
         val habitId = intent.getLongExtra("habit_id", -1L)
 
+        // Init ViewModel
         val habitViewModelFactory = HabitViewModelFactory(app.habitRepository)
         habitViewModel = habitViewModelFactory.create(HabitViewModel::class.java)
 
