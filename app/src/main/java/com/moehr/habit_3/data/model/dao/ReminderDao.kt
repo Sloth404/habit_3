@@ -6,15 +6,19 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.moehr.habit_3.data.model.entity.Reminder
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ReminderDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(reminder : Reminder)
+    suspend fun insert(item : Reminder) : Long
 
-    @Query("SELECT * FROM reminder WHERE uid_habit LIKE :habitUid")
-    suspend fun getByHabitUid(habitUid : Int) : List<Reminder>
+    @Query("SELECT * FROM reminder")
+    fun getAll() : Flow<List<Reminder>>
+
+    @Query("SELECT * FROM reminder WHERE uid_habit LIKE :uid")
+    suspend fun getAllByHabitUid(uid : Int) : List<Reminder>
 
     @Delete
-    suspend fun delete(reminder : Reminder)
+    suspend fun delete(item : Reminder)
 }

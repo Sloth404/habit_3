@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.moehr.habit_3.data.model.entity.HabitLogEntry
+import kotlinx.coroutines.flow.Flow
 
 /**
  * don't need to be update-able
@@ -13,11 +14,14 @@ import com.moehr.habit_3.data.model.entity.HabitLogEntry
 @Dao
 interface HabitLogEntryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(habitLogEntry : HabitLogEntry) : Long
+    suspend fun insert(item: HabitLogEntry): Long
 
-    @Query("SELECT * FROM habit_log_entry WHERE uid_habit LIKE :habtiUid")
-    suspend fun getByHabitUid(habtiUid : Int) : List<HabitLogEntry>
+    @Query("SELECT * FROM habit_log_entry")
+    fun getAll() : Flow<List<HabitLogEntry>>
+
+    @Query("SELECT * FROM habit_log_entry WHERE uid_habit LIKE :uid")
+    suspend fun getAllByHabitUid(uid: Int): List<HabitLogEntry>
 
     @Delete
-    suspend fun delete(habitLogEntry : HabitLogEntry)
+    suspend fun delete(item: HabitLogEntry)
 }

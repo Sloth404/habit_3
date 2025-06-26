@@ -15,7 +15,7 @@ import com.moehr.habit_3.data.model.Habit
 import com.moehr.habit_3.data.model.HabitType
 import com.moehr.habit_3.data.model.HabitViewModelFactory
 import com.moehr.habit_3.data.model.RepeatPattern
-import com.moehr.habit_3.data.model.dto.ReminderTimeDTO
+import com.moehr.habit_3.data.model.dto.ReminderDTO
 import com.moehr.habit_3.data.repository.HabitRepository
 import com.moehr.habit_3.ui.edit.EditItem
 import com.moehr.habit_3.viewmodel.HabitViewModel
@@ -176,7 +176,7 @@ class EditHabitActivity : AppCompatActivity() {
         val target = habitTypeContent.target
 
         // Build reminders list using ReminderTimeDTO
-        val reminders = mutableListOf<ReminderTimeDTO>()
+        val reminders = mutableListOf<ReminderDTO>()
         if (reminderContent != null && reminderContent.pushEnabled) {
             reminderContent.timesOfDay.forEach { timeLabel ->
                 val hour = when (timeLabel) {
@@ -185,7 +185,7 @@ class EditHabitActivity : AppCompatActivity() {
                     "EVENING" -> 19
                     else -> 0
                 }
-                reminders.add(ReminderTimeDTO(hour, 0))
+                reminders.add(ReminderDTO(hour, 0))
             }
         }
 

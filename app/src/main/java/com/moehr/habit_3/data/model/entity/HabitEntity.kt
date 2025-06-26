@@ -8,7 +8,7 @@ import com.moehr.habit_3.data.model.RepeatPattern
 import java.time.LocalDateTime
 
 @Entity(tableName = "habit")
-data class Habit (
+data class HabitEntity (
     @PrimaryKey(autoGenerate = true) val uid : Int = 0,
     @ColumnInfo(name = "name") val name : String,
     @ColumnInfo(name = "type") val type : HabitType,
