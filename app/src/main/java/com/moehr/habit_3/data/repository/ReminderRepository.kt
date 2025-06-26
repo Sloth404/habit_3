@@ -1,4 +1,4 @@
-package com.moehr.habit_3.data.model.repository
+package com.moehr.habit_3.data.repository
 
 import androidx.annotation.WorkerThread
 import com.moehr.habit_3.data.model.dao.ReminderDao

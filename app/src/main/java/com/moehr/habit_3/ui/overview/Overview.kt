@@ -19,7 +19,7 @@ import com.moehr.habit_3.EditHabitActivity
 import com.moehr.habit_3.R
 import com.moehr.habit_3.data.model.Habit
 import com.moehr.habit_3.data.model.HabitViewModelFactory
-import com.moehr.habit_3.data.repository.HabitRepository
+import com.moehr.habit_3.data.repository.HabitRepositoryDeprecated
 import com.moehr.habit_3.viewmodel.HabitViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -45,7 +45,7 @@ class Overview : Fragment() {
         val view = inflater.inflate(R.layout.fragment_overview, container, false)
 
         // Initialize ViewModel with repository and factory
-        val repository = HabitRepository()
+        val repository = HabitRepositoryDeprecated()
         val factory = HabitViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory)[HabitViewModel::class.java]
 

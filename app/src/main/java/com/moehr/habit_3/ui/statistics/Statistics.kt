@@ -14,7 +14,7 @@ import com.moehr.habit_3.data.model.HabitType
 import com.moehr.habit_3.data.model.HabitViewModelFactory
 import com.moehr.habit_3.data.model.RepeatPattern
 import com.moehr.habit_3.data.model.dto.HabitLogEntryDTO
-import com.moehr.habit_3.data.repository.HabitRepository
+import com.moehr.habit_3.data.repository.HabitRepositoryDeprecated
 import com.moehr.habit_3.viewmodel.HabitViewModel
 import java.time.LocalDateTime
 
@@ -46,7 +46,7 @@ class Statistics : Fragment() {
         adapter.submitList(padHabits(habits))
 
         // Initialize ViewModel with repository and factory
-        val repository = HabitRepository()
+        val repository = HabitRepositoryDeprecated()
         val factory = HabitViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory)[HabitViewModel::class.java]
 

@@ -2,18 +2,18 @@ package com.moehr.habit_3.data.model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.moehr.habit_3.data.repository.HabitRepository
+import com.moehr.habit_3.data.repository.HabitRepositoryDeprecated
 import com.moehr.habit_3.viewmodel.HabitViewModel
 
 /**
  * Factory class responsible for creating instances of [HabitViewModel].
  *
- * This factory enables passing the [HabitRepository] dependency into the [HabitViewModel].
+ * This factory enables passing the [HabitRepositoryDeprecated] dependency into the [HabitViewModel].
  *
- * @property repository The [HabitRepository] instance to be provided to the ViewModel.
+ * @property repository The [HabitRepositoryDeprecated] instance to be provided to the ViewModel.
  */
 class HabitViewModelFactory(
-    private val repository: HabitRepository
+    private val repository: HabitRepositoryDeprecated
 ) : ViewModelProvider.Factory {
 
     /**

@@ -16,7 +16,7 @@ import com.moehr.habit_3.data.model.HabitType
 import com.moehr.habit_3.data.model.HabitViewModelFactory
 import com.moehr.habit_3.data.model.RepeatPattern
 import com.moehr.habit_3.data.model.dto.ReminderTimeDTO
-import com.moehr.habit_3.data.repository.HabitRepository
+import com.moehr.habit_3.data.repository.HabitRepositoryDeprecated
 import com.moehr.habit_3.ui.edit.EditItem
 import com.moehr.habit_3.viewmodel.HabitViewModel
 import kotlinx.coroutines.launch
@@ -33,7 +33,7 @@ class EditHabitActivity : AppCompatActivity() {
     private lateinit var btnSave: Button
 
     // Data and logic
-    private lateinit var habitRepository: HabitRepository
+    private lateinit var habitRepositoryDeprecated: HabitRepositoryDeprecated
     private lateinit var habitViewModel: HabitViewModel
     private var currentHabit: Habit? = null
 
@@ -44,14 +44,14 @@ class EditHabitActivity : AppCompatActivity() {
         initViews()
 
         val habitId = intent.getLongExtra("habit_id", -1L)
-        habitRepository = HabitRepository()
-        val factory = HabitViewModelFactory(habitRepository)
+        habitRepositoryDeprecated = HabitRepositoryDeprecated()
+        val factory = HabitViewModelFactory(habitRepositoryDeprecated)
         habitViewModel = factory.create(HabitViewModel::class.java)
 
         // Load habit if editing an existing one
         if (habitId != -1L) {
             lifecycleScope.launch {
-                currentHabit = habitRepository.getHabitById(habitId)
+                currentHabit = habitRepositoryDeprecated.getHabitById(habitId)
                 populateUI(currentHabit)
             }
         } else {

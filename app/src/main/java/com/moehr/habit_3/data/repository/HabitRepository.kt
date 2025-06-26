@@ -1,45 +1,31 @@
 package com.moehr.habit_3.data.repository
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.moehr.habit_3.data.model.Habit
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import androidx.annotation.WorkerThread
+import com.moehr.habit_3.data.model.dao.HabitDao
+import com.moehr.habit_3.data.model.entity.Habit
+import kotlinx.coroutines.flow.Flow
 
-class HabitRepository {
-    private val habitList = mutableListOf<Habit>()
+class HabitRepository(private val habitDao : HabitDao) {
+    var allHabits : Flow<List<Habit>> = habitDao.getAll()
 
-    private val habitsLiveData = MutableLiveData<List<Habit>>(habitList)
-
-    fun getHabits(): LiveData<List<Habit>> {
-        return habitsLiveData
+    @WorkerThread
+    suspend fun create(item : Habit) : Int {
+        val uid = habitDao.insert(item)
+        return uid.toInt()
     }
 
-    suspend fun addHabit(habit: Habit) {
-        withContext(Dispatchers.IO) {
-            habitList.add(habit)
-            habitsLiveData.postValue(habitList.toList())
-        }
+    @WorkerThread
+    suspend fun readById(uid : Int) : Habit {
+        return habitDao.getById(uid)
     }
 
-    suspend fun deleteHabit(habit: Habit) {
-        withContext(Dispatchers.IO) {
-            habitList.remove(habit)
-            habitsLiveData.postValue(habitList.toList())
-        }
+    @WorkerThread
+    suspend fun update(item : Habit) {
+        habitDao.update(item)
     }
 
-    suspend fun updateHabit(updatedHabit: Habit) {
-        withContext(Dispatchers.IO) {
-            val index = habitList.indexOfFirst { it.id == updatedHabit.id }
-            if (index != -1) {
-                habitList[index] = updatedHabit
-                habitsLiveData.postValue(habitList.toList())
-            }
-        }
-    }
-
-    fun getHabitById(id: Long): Habit? {
-        return habitList.find { it.id == id }
+    @WorkerThread
+    suspend fun delete(item : Habit) {
+        habitDao.delete(item)
     }
 }
