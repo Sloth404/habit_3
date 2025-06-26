@@ -20,7 +20,7 @@ import java.time.LocalDateTime
  * @property motivationalNote A custom motivational message for the habit.
  * @property log List of habit log entries representing past tracking data.
  */
-data class Habit(
+data class  Habit(
     val id: Long,
     val name: String,
     val type: HabitType,
