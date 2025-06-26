@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.moehr.habit_3.data.model.dao.HabitDao
 import com.moehr.habit_3.data.model.dao.HabitLogEntryDao
 import com.moehr.habit_3.data.model.dao.ReminderDao
@@ -23,6 +24,7 @@ import com.moehr.habit_3.data.model.entity.Reminder
  * @see RoomDatabase
  */
 @Database(entities = [HabitEntity::class, HabitLogEntry::class, Reminder::class], version = 1)
+@TypeConverters(Converters::class)
 abstract class  AppDatabase : RoomDatabase() {
     abstract fun habitDao() : HabitDao
     abstract fun habitLogEntryDao() : HabitLogEntryDao
