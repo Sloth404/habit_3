@@ -18,7 +18,7 @@ interface HabitDao {
     fun getAll() : Flow<List<Habit>>
 
     @Query("SELECT * FROM habit WHERE uid LIKE :uid")
-    suspend fun getByUid(uid : Int) : Habit
+    suspend fun getById(uid : Int) : Habit
 
     @Update
     suspend fun update(habit : Habit)

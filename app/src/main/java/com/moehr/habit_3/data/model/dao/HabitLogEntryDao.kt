@@ -13,11 +13,11 @@ import com.moehr.habit_3.data.model.entity.HabitLogEntry
 @Dao
 interface HabitLogEntryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(habitLogEntry : HabitLogEntry) : Long
+    suspend fun insert(habitLogEntry: HabitLogEntry): Long
 
     @Query("SELECT * FROM habit_log_entry WHERE uid_habit LIKE :habtiUid")
-    suspend fun getByHabitUid(habtiUid : Int) : List<HabitLogEntry>
+    suspend fun getAllByHabitUid(habtiUid: Int): List<HabitLogEntry>
 
     @Delete
-    suspend fun delete(habitLogEntry : HabitLogEntry)
+    suspend fun delete(habitLogEntry: HabitLogEntry)
 }
