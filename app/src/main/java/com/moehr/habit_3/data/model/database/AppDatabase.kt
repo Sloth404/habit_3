@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.moehr.habit_3.data.model.dao.HabitDao
 import com.moehr.habit_3.data.model.dao.HabitLogEntryDao
 import com.moehr.habit_3.data.model.dao.ReminderDao
-import com.moehr.habit_3.data.model.entity.Habit
+import com.moehr.habit_3.data.model.entity.HabitEntity
 import com.moehr.habit_3.data.model.entity.HabitLogEntry
 import com.moehr.habit_3.data.model.entity.Reminder
 
@@ -22,7 +22,7 @@ import com.moehr.habit_3.data.model.entity.Reminder
  *
  * @see RoomDatabase
  */
-@Database(entities = [Habit::class, HabitLogEntry::class, Reminder::class], version = 1)
+@Database(entities = [HabitEntity::class, HabitLogEntry::class, Reminder::class], version = 1)
 abstract class  AppDatabase : RoomDatabase() {
     abstract fun habitDao() : HabitDao
     abstract fun habitLogEntryDao() : HabitLogEntryDao

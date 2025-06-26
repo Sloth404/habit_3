@@ -9,7 +9,7 @@ import java.time.LocalTime
  * @property hour The hour part of the reminder (0-23).
  * @property minute The minute part of the reminder (0-59).
  */
-data class ReminderTimeDTO(
+data class ReminderDTO(
     val hour: Int,
     val minute: Int,
 ) : Serializable {
@@ -23,13 +23,13 @@ data class ReminderTimeDTO(
 
     companion object {
         /**
-         * Creates a [ReminderTimeDTO] from a [LocalTime] instance.
+         * Creates a [ReminderDTO] from a [LocalTime] instance.
          *
          * @param time LocalTime to convert.
          * @return Corresponding ReminderTimeDTO.
          */
-        fun fromLocalTime(time: LocalTime): ReminderTimeDTO {
-            return ReminderTimeDTO(time.hour, time.minute)
+        fun fromLocalTime(time: LocalTime): ReminderDTO {
+            return ReminderDTO(time.hour, time.minute)
         }
     }
 }

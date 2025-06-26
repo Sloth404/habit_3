@@ -5,12 +5,13 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.moehr.habit_3.data.model.dto.HabitLogEntryDTO
 import java.time.LocalDateTime
 
 @Entity(
     tableName = "habit_log_entry",
     foreignKeys = [ForeignKey(
-        entity = Habit::class,
+        entity = HabitEntity::class,
         parentColumns = ["uid"],
         childColumns = ["uid_habit"],
         // ensure all habit log entries are deleted, when the referenced habit is deleted
@@ -22,5 +23,10 @@ data class HabitLogEntry(
     @PrimaryKey(autoGenerate = true) val uid : Int = 0,
     @ColumnInfo(name = "uid_habit") var uidHabit : Int,
     @ColumnInfo(name = "date") var date : LocalDateTime,
-    @ColumnInfo(name = "success") var success : Boolean
-)
+) {
+    fun toDto() : HabitLogEntryDTO {
+        return HabitLogEntryDTO(
+            date=date
+        )
+    }
+}

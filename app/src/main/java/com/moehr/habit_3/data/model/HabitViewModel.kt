@@ -4,19 +4,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.moehr.habit_3.data.model.Habit
-import com.moehr.habit_3.data.repository.HabitRepositoryDeprecated
+import com.moehr.habit_3.data.repository.HabitRepository
 import kotlinx.coroutines.launch
 
 /**
  * ViewModel responsible for managing Habit data and business logic.
  *
- * Interacts with the [HabitRepositoryDeprecated] to perform CRUD operations on Habit entities.
+ * Interacts with the [HabitRepository] to perform CRUD operations on Habit entities.
  * Uses [viewModelScope] to launch coroutines for asynchronous operations.
  *
  * @property repository The repository instance used for data access.
  */
 class HabitViewModel(
-    private val repository: HabitRepositoryDeprecated
+    private val repository: HabitRepository
 ) : ViewModel() {
 
     /**
