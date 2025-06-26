@@ -39,9 +39,8 @@ android {
 dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.room.common)
-    implementation(libs.androidx.room.runtime.jvm)
-
+    implementation(libs.androidx.room.common.jvm)
+    implementation(libs.androidx.room.runtime.android)
     // KSP compiler
     ksp(libs.androidx.room.compiler)
 
