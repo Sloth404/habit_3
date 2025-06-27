@@ -82,7 +82,7 @@ class Statistics : Fragment() {
         type = HabitType.BUILD,
         unit = "",
         repeat = RepeatPattern.DAILY,
-        reminders = emptyList(),
+        reminder = null,
         createdAt = LocalDateTime.now(),
         motivationalNote = "",
         log = emptyList<HabitLogEntryDTO>(),

@@ -28,11 +28,10 @@ sealed class EditItem {
      * Represents the reminder settings for the habit.
      *
      * @property pushEnabled Whether push notifications are enabled.
-     * @property timesOfDay List of selected times for reminders (e.g., "MORNING").
-     *                      Defaults to ["MORNING"].
+     * @property timeOfDay Selected time for reminders (e.g., "MORNING").
      */
     data class ReminderContent(
         var pushEnabled: Boolean = true,
-        var timesOfDay: List<String> = listOf("MORNING")
+        var timeOfDay: String = "MORNING"
     ) : EditItem()
 }

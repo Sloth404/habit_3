@@ -15,7 +15,7 @@ import com.moehr.habit_3.data.model.Habit
 import com.moehr.habit_3.data.model.HabitType
 import com.moehr.habit_3.data.viewmodel.HabitViewModelFactory
 import com.moehr.habit_3.data.model.RepeatPattern
-import com.moehr.habit_3.data.model.dto.ReminderDTO
+import com.moehr.habit_3.data.preferences.PushNotificationKeys
 import com.moehr.habit_3.ui.edit.EditItem
 import com.moehr.habit_3.data.viewmodel.HabitViewModel
 import kotlinx.coroutines.launch
@@ -95,15 +95,13 @@ class EditHabitActivity : AppCompatActivity() {
                 target = 1
             ),
             EditItem.ReminderContent(
-                pushEnabled = habit?.reminders?.isNotEmpty() ?: false,
-                timesOfDay = habit?.reminders?.map {
-                    when {
-                        it.hour in 5..9 -> "MORNING"
-                        it.hour in 10..13 -> "NOON"
-                        it.hour in 17..21 -> "EVENING"
-                        else -> "CUSTOM"
-                    }
-                } ?: listOf("MORNING")
+                pushEnabled = habit?.reminder?.isNotEmpty() ?: false,
+                timeOfDay = when (habit?.reminder) {
+                    PushNotificationKeys.MORNING.id -> "MORNING"
+                    PushNotificationKeys.NOON.id -> "NOON"
+                    PushNotificationKeys.EVENING.id -> "EVENING"
+                    else -> "CUSTOM"
+                }
             )
         )
 
@@ -180,17 +178,16 @@ class EditHabitActivity : AppCompatActivity() {
         val target = habitTypeContent.target
 
         // Build reminders list using ReminderTimeDTO
-        val reminders = mutableListOf<ReminderDTO>()
-        if (reminderContent != null && reminderContent.pushEnabled) {
-            reminderContent.timesOfDay.forEach { timeLabel ->
-                val hour = when (timeLabel) {
-                    "MORNING" -> 7
-                    "NOON" -> 12
-                    "EVENING" -> 19
-                    else -> 0
-                }
-                reminders.add(ReminderDTO(hour, 0))
+        val reminder : String? = if (reminderContent != null && reminderContent.pushEnabled) {
+            when(reminderContent.timeOfDay) {
+                "MORNING" -> PushNotificationKeys.MORNING.id
+                "NOON" -> PushNotificationKeys.NOON.id
+                "EVENING" -> PushNotificationKeys.EVENING.id
+                "CUSTOM" -> PushNotificationKeys.CUSTOM.id
+                else -> null
             }
+        } else {
+            null
         }
 
         val now = LocalDateTime.now()
@@ -202,7 +199,7 @@ class EditHabitActivity : AppCompatActivity() {
             repeat = repeatPattern,
             unit = unit,
             target = target,
-            reminders = reminders
+            reminder = reminder
         ) ?: Habit(
             id = 0L,
             name = name,
@@ -211,7 +208,7 @@ class EditHabitActivity : AppCompatActivity() {
             repeat = repeatPattern,
             unit = unit,
             target = target,
-            reminders = reminders,
+            reminder = reminder,
             createdAt = now,
             log = emptyList()
         )
