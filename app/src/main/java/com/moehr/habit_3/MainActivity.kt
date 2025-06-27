@@ -2,6 +2,7 @@ package com.moehr.habit_3
 
 import android.Manifest
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -30,7 +31,10 @@ class MainActivity : AppCompatActivity() {
         val settingsFragment = SettingsFragment()
 
         // Set default fragment
-        setCurrentFragment(overviewFragment)
+        if (savedInstanceState == null) {
+            setCurrentFragment(overviewFragment)
+            bottomNavigationView.selectedItemId = R.id.menu_overview
+        }
 
         // Set navigation item selection behavior
         bottomNavigationView.setOnItemSelectedListener { item ->
@@ -42,9 +46,6 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-
-        // Ensure the correct menu item is selected
-        bottomNavigationView.selectedItemId = R.id.menu_overview
 
         // Request POST_NOTIFICATIONS permission if necessary
         requestNotificationPermission()

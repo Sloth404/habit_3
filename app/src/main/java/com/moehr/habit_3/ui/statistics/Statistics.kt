@@ -12,10 +12,10 @@ import com.moehr.habit_3.MainApplication
 import com.moehr.habit_3.R
 import com.moehr.habit_3.data.model.Habit
 import com.moehr.habit_3.data.model.HabitType
-import com.moehr.habit_3.data.model.HabitViewModelFactory
+import com.moehr.habit_3.data.viewmodel.HabitViewModelFactory
 import com.moehr.habit_3.data.model.RepeatPattern
 import com.moehr.habit_3.data.model.dto.HabitLogEntryDTO
-import com.moehr.habit_3.viewmodel.HabitViewModel
+import com.moehr.habit_3.data.viewmodel.HabitViewModel
 import java.time.LocalDateTime
 
 /**

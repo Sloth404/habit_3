@@ -1,6 +1,7 @@
 package com.moehr.habit_3.ui.settings
 
 import android.app.AlertDialog
+import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -17,7 +18,10 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import com.moehr.habit_3.R
+import com.moehr.habit_3.data.preferences.PushKeys
 import com.moehr.habit_3.data.preferences.SharedPreferencesManager
+import java.util.Calendar
+import java.util.Locale
 
 /**
  * Fragment that manages user settings including theme, notifications, and dialogs.
@@ -39,6 +43,14 @@ class SettingsFragment : Fragment() {
     // Button to save the settings
     private lateinit var btnSettingsSave: Button
 
+    // Selection states
+    private var isPushSelectionOpen : Boolean = false
+    private var isThemeSelectionOpen : Boolean = false
+
+    // Id keys for savedInstanceState
+    private val KEY_PUSH : String = "isPushSelectionOpen"
+    private val KEY_THEME : String = "isThemeSelectionOpen"
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -52,9 +64,11 @@ class SettingsFragment : Fragment() {
         pushSection = view.findViewById(R.id.push_section)
         themeSection = view.findViewById(R.id.theme_section)
 
-        // Start with both sections collapsed
-        pushSection.visibility = View.GONE
-        themeSection.visibility = View.GONE
+        // Initialize Selection States
+        isPushSelectionOpen = savedInstanceState?.getBoolean(KEY_PUSH) ?: false
+        isThemeSelectionOpen = savedInstanceState?.getBoolean(KEY_THEME) ?: false
+        pushSection.visibility = if (isPushSelectionOpen) View.VISIBLE else View.GONE
+        themeSection.visibility = if (isThemeSelectionOpen) View.VISIBLE else View.GONE
 
         // Initialize switches and buttons
         appSwitch = view.findViewById(R.id.switch_app)
@@ -92,7 +106,46 @@ class SettingsFragment : Fragment() {
         // Setup expandable toggles for sections
         setupToggleSections()
 
+        // Add on click listeners to the time input fields
+        view.findViewById<EditText>(R.id.editTimeMorning).setOnClickListener {
+            showTimePicker(it as EditText)
+        }
+        view.findViewById<EditText>(R.id.editTimeNoon).setOnClickListener {
+            showTimePicker(it as EditText)
+        }
+        view.findViewById<EditText>(R.id.editTimeEvening).setOnClickListener {
+            showTimePicker(it as EditText)
+        }
+        view.findViewById<EditText>(R.id.editTimeCustom).setOnClickListener {
+            showTimePicker(it as EditText)
+        }
+
+        // Load Push Notification times from shared preferences
+        val pushNotificationTimes: Map<String, String> = SharedPreferencesManager.loadPushSettings(requireContext())
+        pushNotificationTimes.forEach { time ->
+            when(time.key) {
+                PushKeys.MORNING.id -> {
+                    if (time.value.isNotEmpty()) view.findViewById<EditText>(R.id.editTimeMorning).setText(time.value)
+                }
+                PushKeys.NOON.id -> {
+                    if (time.value.isNotEmpty()) view.findViewById<EditText>(R.id.editTimeNoon).setText(time.value)
+                }
+                PushKeys.EVENING.id -> {
+                    if (time.value.isNotEmpty()) view.findViewById<EditText>(R.id.editTimeEvening).setText(time.value)
+                }
+                PushKeys.CUSTOM.id -> {
+                    if (time.value.isNotEmpty()) view.findViewById<EditText>(R.id.editTimeCustom).setText(time.value)
+                }
+            }
+        }
+
         return view
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(KEY_PUSH, isPushSelectionOpen)
+        outState.putBoolean(KEY_THEME, isThemeSelectionOpen)
     }
 
     /**
@@ -139,13 +192,13 @@ class SettingsFragment : Fragment() {
      */
     private fun saveSettings() {
         // Retrieve user inputs from EditTexts
-        val pushMorning = view?.findViewById<EditText>(R.id.editText4)?.text.toString()
-        val pushNoon = view?.findViewById<EditText>(R.id.editText)?.text.toString()
-        val pushEvening = view?.findViewById<EditText>(R.id.editText2)?.text.toString()
-        val pushCustom = view?.findViewById<EditText>(R.id.editText3)?.text.toString()
+        val pushMorning = view?.findViewById<EditText>(R.id.editTimeMorning)?.text.toString()
+        val pushNoon = view?.findViewById<EditText>(R.id.editTimeNoon)?.text.toString()
+        val pushEvening = view?.findViewById<EditText>(R.id.editTimeEvening)?.text.toString()
+        val pushCustom = view?.findViewById<EditText>(R.id.editTimeCustom)?.text.toString()
 
         // Read switch states
-        val icon = iconSwitch.isChecked
+        val icon = false // iconSwitch.isChecked
         val app = appSwitch.isChecked
 
         // Save settings via SharedPreferencesManager
@@ -158,10 +211,12 @@ class SettingsFragment : Fragment() {
     private fun setupToggleSections() {
         pushToggle.setOnClickListener {
             toggleSection(pushSection)
+            isPushSelectionOpen = !isPushSelectionOpen
         }
 
         themeToggle.setOnClickListener {
             toggleSection(themeSection)
+            isThemeSelectionOpen = !isThemeSelectionOpen
         }
     }
 
@@ -170,5 +225,18 @@ class SettingsFragment : Fragment() {
      */
     private fun toggleSection(section: ConstraintLayout) {
         section.visibility = if (section.isVisible) View.GONE else View.VISIBLE
+    }
+
+    private fun showTimePicker(targetEditText: EditText) {
+        val calendar = Calendar.getInstance()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+
+        val timePicker = TimePickerDialog(requireContext(), { _, selectedHour, selectedMinute ->
+            val formattedTime = String.format(Locale.US, "%02d:%02d", selectedHour, selectedMinute)
+            targetEditText.setText(formattedTime)
+        }, hour, minute, true) // true for 24-hour format
+
+        timePicker.show()
     }
 }
