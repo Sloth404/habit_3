@@ -100,23 +100,5 @@ class SharedPreferencesManager {
                 putInt(KEY_THEME, mode)
             }
         }
-
-        fun loadLastScreen(context: Context) : String? {
-            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            val screen = prefs.getString(KEY_SCREEN, Screen.OVERVIEW.value)
-
-            // reset last screen, so the user does not always land in settings/statistics screen
-            // after reopening the app
-            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit {
-                putString(KEY_SCREEN, null)
-            }
-            return screen
-        }
-
-        fun setLastScreen(context: Context, screen : Screen) {
-            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit {
-                putString(KEY_SCREEN, screen.value)
-            }
-        }
     }
 }

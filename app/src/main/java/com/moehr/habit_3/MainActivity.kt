@@ -32,14 +32,8 @@ class MainActivity : AppCompatActivity() {
 
         // Set default fragment
         if (savedInstanceState == null) {
-            val lastScreen = SharedPreferencesManager.loadLastScreen(this)
-            val (fragment, menuId) = when (lastScreen) {
-                "settings" -> settingsFragment to R.id.menu_settings
-                "statistics" -> statisticsFragment to R.id.menu_statistics
-                else -> overviewFragment to R.id.menu_overview
-            }
-            setCurrentFragment(fragment)
-            bottomNavigationView.selectedItemId = menuId
+            setCurrentFragment(overviewFragment)
+            bottomNavigationView.selectedItemId = R.id.menu_overview
         }
 
         // Set navigation item selection behavior

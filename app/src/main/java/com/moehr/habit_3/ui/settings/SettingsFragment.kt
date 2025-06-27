@@ -18,7 +18,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import com.moehr.habit_3.R
-import com.moehr.habit_3.data.preferences.Screen
 import com.moehr.habit_3.data.preferences.SharedPreferencesManager
 
 /**
@@ -79,11 +78,6 @@ class SettingsFragment : Fragment() {
         // Set listener for theme switch
         appSwitch.setOnCheckedChangeListener { _, isChecked ->
             appSwitch.text = if (isChecked) getString(R.string.settings_dark) else getString(R.string.settings_light)
-            SharedPreferencesManager.setLastScreen(
-                requireContext(),
-                Screen.SETTINGS
-            )
-
             SharedPreferencesManager.setTheme(
                 requireContext(),
                 if (isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
