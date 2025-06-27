@@ -15,8 +15,7 @@ import com.moehr.habit_3.data.model.Habit
 import com.moehr.habit_3.data.model.HabitType
 import com.moehr.habit_3.data.model.HabitViewModelFactory
 import com.moehr.habit_3.data.model.RepeatPattern
-import com.moehr.habit_3.data.model.dto.ReminderTimeDTO
-import com.moehr.habit_3.data.repository.HabitRepository
+import com.moehr.habit_3.data.model.dto.ReminderDTO
 import com.moehr.habit_3.ui.edit.EditItem
 import com.moehr.habit_3.viewmodel.HabitViewModel
 import kotlinx.coroutines.launch
@@ -33,7 +32,7 @@ class EditHabitActivity : AppCompatActivity() {
     private lateinit var btnSave: Button
 
     // Data and logic
-    private lateinit var habitRepository: HabitRepository
+    private lateinit var app : MainApplication
     private lateinit var habitViewModel: HabitViewModel
     private var currentHabit: Habit? = null
 
@@ -41,17 +40,22 @@ class EditHabitActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
 
+        // Retrieve Application
+        app = application as MainApplication
+
+        // Init UI
         initViews()
 
         val habitId = intent.getLongExtra("habit_id", -1L)
-        habitRepository = HabitRepository()
-        val factory = HabitViewModelFactory(habitRepository)
-        habitViewModel = factory.create(HabitViewModel::class.java)
+
+        // Init ViewModel
+        val habitViewModelFactory = HabitViewModelFactory(app.habitRepository)
+        habitViewModel = habitViewModelFactory.create(HabitViewModel::class.java)
 
         // Load habit if editing an existing one
         if (habitId != -1L) {
             lifecycleScope.launch {
-                currentHabit = habitRepository.getHabitById(habitId)
+                currentHabit = habitViewModel.getHabitById(habitId)
                 populateUI(currentHabit)
             }
         } else {
@@ -176,7 +180,7 @@ class EditHabitActivity : AppCompatActivity() {
         val target = habitTypeContent.target
 
         // Build reminders list using ReminderTimeDTO
-        val reminders = mutableListOf<ReminderTimeDTO>()
+        val reminders = mutableListOf<ReminderDTO>()
         if (reminderContent != null && reminderContent.pushEnabled) {
             reminderContent.timesOfDay.forEach { timeLabel ->
                 val hour = when (timeLabel) {
@@ -185,7 +189,7 @@ class EditHabitActivity : AppCompatActivity() {
                     "EVENING" -> 19
                     else -> 0
                 }
-                reminders.add(ReminderTimeDTO(hour, 0))
+                reminders.add(ReminderDTO(hour, 0))
             }
         }
 

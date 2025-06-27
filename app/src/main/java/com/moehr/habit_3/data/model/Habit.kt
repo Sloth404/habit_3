@@ -1,7 +1,7 @@
 package com.moehr.habit_3.data.model
 
 import com.moehr.habit_3.data.model.dto.HabitLogEntryDTO
-import com.moehr.habit_3.data.model.dto.ReminderTimeDTO
+import com.moehr.habit_3.data.model.dto.ReminderDTO
 import java.io.Serializable
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -20,14 +20,14 @@ import java.time.LocalDateTime
  * @property motivationalNote A custom motivational message for the habit.
  * @property log List of habit log entries representing past tracking data.
  */
-data class Habit(
+data class  Habit(
     val id: Long,
     val name: String,
     val type: HabitType,
     val target: Int,
     val unit: String,
     val repeat: RepeatPattern,
-    val reminders: List<ReminderTimeDTO>,
+    val reminders: List<ReminderDTO>,
     val createdAt: LocalDateTime,
     val motivationalNote: String,
     val log: List<HabitLogEntryDTO>
@@ -35,15 +35,38 @@ data class Habit(
 
     /**
      * Calculates the current streak of successful completions.
+     * TODO: TEST!!!
      *
      * @return Number of consecutive successful log entries.
      */
-    fun getCurrentStreak(): Int = log.count { it.success }
+    fun getCurrentStreak(): Int {
+        val dates = log
+            .map { it.date.toLocalDate() }
+            .distinct()
+            .sortedDescending()
+            .toSet()
+
+        if (dates.isEmpty()) return 0
+
+        var streak = 1
+        var previousDate = dates.elementAt(0)
+
+        for (i in 1 until dates.size) {
+            val currentDate = dates.elementAt(i)
+            if (previousDate.minusDays(1) == currentDate) {
+                streak++
+                previousDate = currentDate
+            } else {
+                break
+            }
+        }
+        return streak
+    }
 
     /**
      * Retrieves a list of dates where the habit was successfully completed.
      *
      * @return List of LocalDate objects representing successful completion dates.
      */
-    fun getSuccessfulDates(): List<LocalDate> = log.filter { it.success }.map { it.date.toLocalDate() }
+    fun getSuccessfulDates(): List<LocalDate> = log.map { it.date.toLocalDate() }
 }

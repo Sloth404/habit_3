@@ -16,10 +16,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.moehr.habit_3.DetailActivity
 import com.moehr.habit_3.EditHabitActivity
+import com.moehr.habit_3.MainApplication
 import com.moehr.habit_3.R
 import com.moehr.habit_3.data.model.Habit
 import com.moehr.habit_3.data.model.HabitViewModelFactory
-import com.moehr.habit_3.data.repository.HabitRepository
 import com.moehr.habit_3.viewmodel.HabitViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -35,6 +35,7 @@ class Overview : Fragment() {
 
     private lateinit var adapter: HabitAdapter
     private lateinit var viewModel: HabitViewModel
+    private lateinit var app : MainApplication
     private var habits: List<Habit> = emptyList()
 
     override fun onCreateView(
@@ -44,9 +45,11 @@ class Overview : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_overview, container, false)
 
+        // Retrieve application
+        app = requireActivity().application as MainApplication
+
         // Initialize ViewModel with repository and factory
-        val repository = HabitRepository()
-        val factory = HabitViewModelFactory(repository)
+        val factory = HabitViewModelFactory(app.habitRepository)
         viewModel = ViewModelProvider(this, factory)[HabitViewModel::class.java]
 
         // Setup RecyclerView and its adapter

@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.moehr.habit_3.data.model.Habit
 import com.moehr.habit_3.data.model.HabitViewModelFactory
-import com.moehr.habit_3.data.repository.HabitRepository
 import com.moehr.habit_3.ui.tile_tracker.HabitCalendarAdapter
 import com.moehr.habit_3.ui.tile_tracker.HabitDay
 import com.moehr.habit_3.viewmodel.HabitViewModel
@@ -29,7 +28,7 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var editButton: Button
 
     // Data and ViewModel
-    private lateinit var habitRepository: HabitRepository
+    private lateinit var app : MainApplication
     private lateinit var habitViewModel: HabitViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,20 +41,20 @@ class DetailActivity : AppCompatActivity() {
             throw IllegalArgumentException("Habit ID is missing!")
         }
 
+        // Retrieve application
+        app = application as MainApplication
+
         // Init UI
         initViews()
 
-        // Init ViewModel + Repository
-        habitRepository = HabitRepository()
-        val factory = HabitViewModelFactory(habitRepository)
-        habitViewModel = factory.create(HabitViewModel::class.java)
+        // Init ViewModel
+        val habitViewModelFactory = HabitViewModelFactory(app.habitRepository)
+        habitViewModel = habitViewModelFactory.create(HabitViewModel::class.java)
 
         // Load Habit from repository (ideally ViewModel would do this directly)
         lifecycleScope.launch {
-            val habit = habitRepository.getHabitById(habitId)
-            if (habit != null) {
-                updateUI(habit)
-            }
+            val habit = habitViewModel.getHabitById(habitId)
+            updateUI(habit)
         }
     }
 

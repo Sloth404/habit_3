@@ -2,6 +2,7 @@ package com.moehr.habit_3.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.moehr.habit_3.data.model.Habit
 import com.moehr.habit_3.data.repository.HabitRepository
@@ -23,7 +24,7 @@ class HabitViewModel(
      * LiveData list of all habits observed from the repository.
      * UI can observe this to update automatically when the data changes.
      */
-    val habits: LiveData<List<Habit>> = repository.getHabits()
+    val habits: LiveData<List<Habit>> = repository.getHabits().asLiveData()
 
     /**
      * Adds a new habit asynchronously.
@@ -59,12 +60,12 @@ class HabitViewModel(
     }
 
     /**
-     * Retrieves a habit by its ID synchronously.
+     * Retrieves a habit by its ID asynchronously.
      *
      * @param id The unique identifier of the habit.
      * @return The [Habit] object if found, or null otherwise.
      */
-    fun getHabitById(id: Long): Habit? {
+    suspend fun getHabitById(id: Long): Habit {
         return repository.getHabitById(id)
     }
 }
