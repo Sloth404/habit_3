@@ -34,7 +34,7 @@ import kotlin.reflect.KClass
 class Overview : Fragment() {
 
     private lateinit var adapter: HabitAdapter
-    private lateinit var viewModel: HabitViewModel
+    private lateinit var habitViewModel: HabitViewModel
     private lateinit var app : MainApplication
     private var habits: List<Habit> = emptyList()
 
@@ -50,20 +50,26 @@ class Overview : Fragment() {
 
         // Initialize ViewModel with repository and factory
         val factory = HabitViewModelFactory(app.habitRepository)
-        viewModel = ViewModelProvider(this, factory)[HabitViewModel::class.java]
+        habitViewModel = ViewModelProvider(this, factory)[HabitViewModel::class.java]
 
         // Setup RecyclerView and its adapter
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycleView)
-        adapter = HabitAdapter(buildList()) {
-            // Open EditHabitActivity on item click
-            val target: KClass<out EditHabitActivity> = EditHabitActivity::class
-            startActivity(Intent(requireContext(), target.java))
-        }
+        adapter = HabitAdapter(
+            buildList(),
+            onAddHabitClick = {
+                // Open EditHabitActivity on item click
+                val target: KClass<out EditHabitActivity> = EditHabitActivity::class
+                startActivity(Intent(requireContext(), target.java))
+            },
+            onHabitClick = { habit ->
+                habitViewModel.updateHabit(habit)
+            }
+        )
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
 
         // Observe habits LiveData from ViewModel and update UI on changes
-        viewModel.habits.observe(viewLifecycleOwner) { updatedHabits ->
+        habitViewModel.habits.observe(viewLifecycleOwner) { updatedHabits ->
             habits = updatedHabits
             adapter.updateData(buildList())
         }
@@ -158,7 +164,7 @@ class Overview : Fragment() {
                     when (direction) {
                         ItemTouchHelper.LEFT -> {
                             // Delete habit via ViewModel
-                            viewModel.deleteHabit(habit)
+                            habitViewModel.deleteHabit(habit)
                         }
                         ItemTouchHelper.RIGHT -> {
                             // Open DetailActivity to show habit details

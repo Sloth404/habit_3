@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.moehr.habit_3.data.model.HabitType
 import com.moehr.habit_3.data.model.RepeatPattern
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Entity(tableName = "habit")

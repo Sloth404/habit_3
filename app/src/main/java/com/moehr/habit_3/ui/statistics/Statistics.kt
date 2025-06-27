@@ -14,8 +14,8 @@ import com.moehr.habit_3.data.model.Habit
 import com.moehr.habit_3.data.model.HabitType
 import com.moehr.habit_3.data.viewmodel.HabitViewModelFactory
 import com.moehr.habit_3.data.model.RepeatPattern
-import com.moehr.habit_3.data.model.dto.HabitLogEntryDTO
 import com.moehr.habit_3.data.viewmodel.HabitViewModel
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
@@ -85,7 +85,7 @@ class Statistics : Fragment() {
         reminder = null,
         createdAt = LocalDateTime.now(),
         motivationalNote = "",
-        log = emptyList<HabitLogEntryDTO>(),
+        log = emptyList(),
         target = 0
     )
 }
