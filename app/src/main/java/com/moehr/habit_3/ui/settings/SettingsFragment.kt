@@ -3,9 +3,7 @@ package com.moehr.habit_3.ui.settings
 import android.app.AlertDialog
 import android.app.TimePickerDialog
 import android.content.Context
-import android.icu.text.SimpleDateFormat
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +18,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import com.moehr.habit_3.R
+import com.moehr.habit_3.data.preferences.PushKeys
 import com.moehr.habit_3.data.preferences.SharedPreferencesManager
 import java.util.Calendar
 import java.util.Locale
@@ -71,10 +70,6 @@ class SettingsFragment : Fragment() {
         pushSection.visibility = if (isPushSelectionOpen) View.VISIBLE else View.GONE
         themeSection.visibility = if (isThemeSelectionOpen) View.VISIBLE else View.GONE
 
-
-        Log.d("THEME OR SOME SHIT...", "PUSH: $isPushSelectionOpen")
-        Log.d("THEME OR SOME SHIT...", "THEME: $isThemeSelectionOpen")
-
         // Initialize switches and buttons
         appSwitch = view.findViewById(R.id.switch_app)
         btnSettingsSave = view.findViewById(R.id.btnSettingsSave)
@@ -112,17 +107,36 @@ class SettingsFragment : Fragment() {
         setupToggleSections()
 
         // Add on click listeners to the time input fields
-        view.findViewById<EditText>(R.id.editText4).setOnClickListener {
+        view.findViewById<EditText>(R.id.editTimeMorning).setOnClickListener {
             showTimePicker(it as EditText)
         }
-        view.findViewById<EditText>(R.id.editText).setOnClickListener {
+        view.findViewById<EditText>(R.id.editTimeNoon).setOnClickListener {
             showTimePicker(it as EditText)
         }
-        view.findViewById<EditText>(R.id.editText2).setOnClickListener {
+        view.findViewById<EditText>(R.id.editTimeEvening).setOnClickListener {
             showTimePicker(it as EditText)
         }
-        view.findViewById<EditText>(R.id.editText3).setOnClickListener {
+        view.findViewById<EditText>(R.id.editTimeCustom).setOnClickListener {
             showTimePicker(it as EditText)
+        }
+
+        // Load Push Notification times from shared preferences
+        val pushNotificationTimes: Map<String, String> = SharedPreferencesManager.loadPushSettings(requireContext())
+        pushNotificationTimes.forEach { time ->
+            when(time.key) {
+                PushKeys.MORNING.id -> {
+                    if (time.value.isNotEmpty()) view.findViewById<EditText>(R.id.editTimeMorning).setText(time.value)
+                }
+                PushKeys.NOON.id -> {
+                    if (time.value.isNotEmpty()) view.findViewById<EditText>(R.id.editTimeNoon).setText(time.value)
+                }
+                PushKeys.EVENING.id -> {
+                    if (time.value.isNotEmpty()) view.findViewById<EditText>(R.id.editTimeEvening).setText(time.value)
+                }
+                PushKeys.CUSTOM.id -> {
+                    if (time.value.isNotEmpty()) view.findViewById<EditText>(R.id.editTimeCustom).setText(time.value)
+                }
+            }
         }
 
         return view
@@ -178,13 +192,13 @@ class SettingsFragment : Fragment() {
      */
     private fun saveSettings() {
         // Retrieve user inputs from EditTexts
-        val pushMorning = view?.findViewById<EditText>(R.id.editText4)?.text.toString()
-        val pushNoon = view?.findViewById<EditText>(R.id.editText)?.text.toString()
-        val pushEvening = view?.findViewById<EditText>(R.id.editText2)?.text.toString()
-        val pushCustom = view?.findViewById<EditText>(R.id.editText3)?.text.toString()
+        val pushMorning = view?.findViewById<EditText>(R.id.editTimeMorning)?.text.toString()
+        val pushNoon = view?.findViewById<EditText>(R.id.editTimeNoon)?.text.toString()
+        val pushEvening = view?.findViewById<EditText>(R.id.editTimeEvening)?.text.toString()
+        val pushCustom = view?.findViewById<EditText>(R.id.editTimeCustom)?.text.toString()
 
         // Read switch states
-        val icon = iconSwitch.isChecked
+        val icon = false // iconSwitch.isChecked
         val app = appSwitch.isChecked
 
         // Save settings via SharedPreferencesManager

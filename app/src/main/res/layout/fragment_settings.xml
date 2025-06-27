@@ -77,7 +77,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/editText4"
+            android:id="@+id/editTimeMorning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -106,7 +106,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView9"/>
 
         <EditText
-            android:id="@+id/editText"
+            android:id="@+id/editTimeNoon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="32dp"
@@ -115,7 +115,7 @@
             android:textColor="@color/dark_grey"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editText4"
+            app:layout_constraintTop_toBottomOf="@+id/editTimeMorning"
             android:focusable="false"
             android:clickable="true"
             android:inputType="none" />
@@ -134,7 +134,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView13" />
 
         <EditText
-            android:id="@+id/editText2"
+            android:id="@+id/editTimeEvening"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="32dp"
@@ -143,7 +143,7 @@
             android:textColor="@color/dark_grey"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editText"
+            app:layout_constraintTop_toBottomOf="@+id/editTimeNoon"
             android:focusable="false"
             android:clickable="true"
             android:inputType="none" />
@@ -162,7 +162,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView14" />
 
         <EditText
-            android:id="@+id/editText3"
+            android:id="@+id/editTimeCustom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="32dp"
@@ -173,7 +173,7 @@
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editText2"
+            app:layout_constraintTop_toBottomOf="@+id/editTimeEvening"
             android:focusable="false"
             android:clickable="true"
             android:inputType="none" />
