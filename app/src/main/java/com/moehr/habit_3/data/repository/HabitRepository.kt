@@ -96,7 +96,7 @@ class HabitRepository(
         // 3.2.1 only one entry is allowed to be edited and
         // 3.2.2 only today's entry is allowed to be edited
         if (logsToDelete.isNotEmpty() && (logsToDelete.size > 1 || logsToDelete[0].date != LocalDate.now())) {
-            throw IllegalArgumentException("Only todays log entry is allowed to be updated")
+            throw IllegalArgumentException("Only today's log entry is allowed to be updated")
         }
 
         // 3.3 Delete deprecated logs.
