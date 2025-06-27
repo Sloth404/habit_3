@@ -118,31 +118,5 @@ class SharedPreferencesManager {
                 putString(KEY_SCREEN, screen.value)
             }
         }
-
-        fun loadSettingsSelectionStates(context: Context) : Map<String, Boolean> {
-            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            val menuPush = prefs.getBoolean(KEY_SETTINGS_PUSH, false)
-            val menuTheme = prefs.getBoolean(KEY_SETTINGS_THEME, false)
-
-            return buildMap {
-                put(SettingsSelections.PUSH.id, menuPush)
-                put(SettingsSelections.THEME.id, menuTheme)
-            }
-        }
-
-        /**
-         * Persists which menus in the settings were open before reloading the activity (e.g. when
-         * the theme is switched). This way the menus hold their state nevertheless.
-         *
-         * @param context Context to access SharedPreferences.
-         * @param menuPush determines if the menu was open/clos (true/false)
-         * @param menuTheme determines if the menu was open/clos (true/false)
-         * */
-        fun setSettingsSelectionStates(context: Context, menuPush: Boolean, menuTheme: Boolean) {
-            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit {
-                putBoolean(KEY_SETTINGS_PUSH, menuPush)
-                putBoolean(KEY_SETTINGS_THEME, menuTheme)
-            }
-        }
     }
 }

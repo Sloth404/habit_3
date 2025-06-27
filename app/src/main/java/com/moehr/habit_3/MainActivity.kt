@@ -31,14 +31,16 @@ class MainActivity : AppCompatActivity() {
         val settingsFragment = SettingsFragment()
 
         // Set default fragment
-        val lastScreen = SharedPreferencesManager.loadLastScreen(this)
-        val (fragment, menuId) = when (lastScreen) {
-            "settings" -> settingsFragment to R.id.menu_settings
-            "statistics" -> statisticsFragment to R.id.menu_statistics
-            else -> overviewFragment to R.id.menu_overview
+        if (savedInstanceState == null) {
+            val lastScreen = SharedPreferencesManager.loadLastScreen(this)
+            val (fragment, menuId) = when (lastScreen) {
+                "settings" -> settingsFragment to R.id.menu_settings
+                "statistics" -> statisticsFragment to R.id.menu_statistics
+                else -> overviewFragment to R.id.menu_overview
+            }
+            setCurrentFragment(fragment)
+            bottomNavigationView.selectedItemId = menuId
         }
-        setCurrentFragment(fragment)
-        bottomNavigationView.selectedItemId = menuId
 
         // Set navigation item selection behavior
         bottomNavigationView.setOnItemSelectedListener { item ->
