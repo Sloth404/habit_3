@@ -1,6 +1,5 @@
 package com.moehr.habit_3.data.model
 
-import com.moehr.habit_3.data.model.dto.HabitLogEntryDTO
 import java.io.Serializable
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -29,7 +28,7 @@ data class Habit(
     val reminder: String?,
     val createdAt: LocalDateTime,
     val motivationalNote: String,
-    val log: List<HabitLogEntryDTO>
+    val log: List<LocalDate>
 ) : Serializable {
 
     /**
@@ -40,9 +39,7 @@ data class Habit(
      */
     fun getCurrentStreak(): Int {
         val dates = log
-            .map { it.date.toLocalDate() }
-            .distinct()
-            .sortedDescending()
+            .sortedByDescending { it }
             .toSet()
 
         if (dates.isEmpty()) return 0
@@ -67,5 +64,7 @@ data class Habit(
      *
      * @return List of LocalDate objects representing successful completion dates.
      */
-    fun getSuccessfulDates(): List<LocalDate> = log.map { it.date.toLocalDate() }
+    fun getSuccessfulDates(): List<LocalDate> = log.map { it }
+
+    fun isTodaySuccessful() : Boolean = if (log.contains(LocalDate.now())) true else false
 }

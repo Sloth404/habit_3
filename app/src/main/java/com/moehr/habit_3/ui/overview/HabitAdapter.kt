@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.moehr.habit_3.R
 import com.moehr.habit_3.data.model.Habit
+import java.time.LocalDate
 
 /**
  * RecyclerView Adapter to display a list of habits along with placeholders for adding new habits.
@@ -16,7 +17,8 @@ import com.moehr.habit_3.data.model.Habit
  */
 class HabitAdapter(
     private val items: List<HabitListItem>,
-    private val onAddHabitClick: () -> Unit
+    private val onAddHabitClick: () -> Unit,
+    private val onHabitClick: (Habit) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -50,6 +52,29 @@ class HabitAdapter(
             ) { position ->
                 // Update selected position and refresh list to reflect selection change
                 selectedPosition = position
+
+                val habitItem = items[position]
+                if (habitItem is HabitListItem.HabitItem) {
+                    val habit = habitItem.habit
+                    val logList: MutableList<LocalDate> = habit.log.toMutableList()
+                    if (habit.isTodaySuccessful()) {
+                        logList.remove(LocalDate.now())
+                    } else {
+                        logList.add(LocalDate.now())
+                    }
+                    onHabitClick(Habit(
+                        id = habit.id,
+                        name = habit.name,
+                        type = habit.type,
+                        target = habit.target,
+                        unit = habit.unit,
+                        repeat = habit.repeat,
+                        reminder = habit.reminder,
+                        createdAt = habit.createdAt,
+                        motivationalNote = habit.motivationalNote,
+                        log = logList
+                    ))
+                }
                 notifyDataSetChanged()
             }
 
@@ -76,7 +101,7 @@ class HabitAdapter(
                 (holder as HabitViewHolder).bind(
                     habit = item.habit,
                     position = position,
-                    isSelected = position == selectedPosition
+                    isSuccessful = item.habit.isTodaySuccessful()
                 )
             }
             is HabitListItem.Placeholder -> {
@@ -110,7 +135,7 @@ class HabitAdapter(
         /**
          * Binds habit data and updates UI, including background based on selection and position.
          */
-        fun bind(habit: Habit, position: Int, isSelected: Boolean) {
+        fun bind(habit: Habit, position: Int, isSuccessful: Boolean) {
             val tvHabitName = itemView.findViewById<TextView>(R.id.tvHabitName)
             val tvStreak = itemView.findViewById<TextView>(R.id.tvStreak)
 
@@ -119,7 +144,7 @@ class HabitAdapter(
             tvStreak.text = habit.getCurrentStreak().toString()
 
             // Choose background drawable depending on selection and position for variety
-            val backgroundRes = if (isSelected) {
+            val backgroundRes = if (isSuccessful) {
                 when (position) {
                     0 -> R.drawable.bg_habit_item_green
                     1 -> R.drawable.bg_habit_item_yellow

@@ -4,10 +4,10 @@ import com.moehr.habit_3.data.model.entity.HabitEntity
 import com.moehr.habit_3.data.model.Habit
 import com.moehr.habit_3.data.model.dao.HabitDao
 import com.moehr.habit_3.data.model.dao.HabitLogEntryDao
-import com.moehr.habit_3.data.model.dto.HabitLogEntryDTO
 import com.moehr.habit_3.data.model.entity.HabitLogEntry
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import java.time.LocalDate
 
 class HabitRepository(
     private val habitDao : HabitDao,
@@ -20,7 +20,7 @@ class HabitRepository(
         habits.map { habit ->
             val habitLog = logEntries
                 .filter { it.uidHabit == habit.uid }
-                .map { it.toDto() }
+                .map { it.date }
 
             habitEntityToHabit(habit, habitLog)
         }
@@ -78,11 +78,11 @@ class HabitRepository(
         // 1. Get current logs
         val currentLogs : List<HabitLogEntry> = habitLogEntryDao.getAllByHabitUid(item.id.toInt())
 
-        // 2. Get list of new logs
-        val newLogs = item.log.map { dto ->
+        // 2.1 Get list of new logs
+        val newLogs = item.log.map { date ->
             HabitLogEntry(
                 uidHabit = item.id.toInt(),
-                date = dto.date
+                date = date
             )
         }
 
@@ -93,7 +93,13 @@ class HabitRepository(
             }
         }
 
-        // 3.2 Delete deprecated logs.
+        // 3.2.1 only one entry is allowed to be edited and
+        // 3.2.2 only today's entry is allowed to be edited
+        if (logsToDelete.isNotEmpty() && (logsToDelete.size > 1 || logsToDelete[0].date != LocalDate.now())) {
+            throw IllegalArgumentException("Only todays log entry is allowed to be updated")
+        }
+
+        // 3.3 Delete deprecated logs.
         logsToDelete.forEach { habitLogEntryDao.delete(it) }
 
         // 4.1 Filter for logs to add.
@@ -103,19 +109,25 @@ class HabitRepository(
             }
         }
 
-        // 4.2 Insert the logs that are not already in the DB
+        // 4.2.1 only one entry is allowed to be edited and
+        // 4.2.2 only today's entry is allowed to be edited
+        if ( logsToInsert.isNotEmpty() && (logsToInsert.size > 1 || logsToInsert[0].date != LocalDate.now())) {
+            throw IllegalArgumentException("Only todays log entry is allowed to be updated")
+        }
+
+        // 4.3 Insert the logs that are not already in the DB
         logsToInsert.forEach { habitLogEntryDao.insert(it) }
     }
 
     suspend fun getHabitById(id : Long) : Habit {
         val habitEntity = habitDao.getById(id.toInt())
-        val habitLogs = habitLogEntryDao.getAllByHabitUid(habitEntity.uid)
-        val habitLogDtos = habitLogs.map { it.toDto() }
+        val habitLogEntries = habitLogEntryDao.getAllByHabitUid(habitEntity.uid)
+        val habitLogList = habitLogEntries.map { it.date }
 
-        return habitEntityToHabit(habitEntity, habitLogDtos)
+        return habitEntityToHabit(habitEntity, habitLogList)
     }
 
-    private fun habitEntityToHabit(habit : HabitEntity, logEntryDtos : List<HabitLogEntryDTO>) : Habit {
+    private fun habitEntityToHabit(habit : HabitEntity, logEntries : List<LocalDate>) : Habit {
         return Habit(
             id = habit.uid.toLong(),
             name = habit.name,
@@ -126,7 +138,7 @@ class HabitRepository(
             createdAt = habit.createdAt,
             motivationalNote = habit.motivationalNote,
             reminder = habit.reminder,
-            log = logEntryDtos
+            log = logEntries
         )
     }
 }

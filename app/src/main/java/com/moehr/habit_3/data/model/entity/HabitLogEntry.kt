@@ -5,8 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.moehr.habit_3.data.model.dto.HabitLogEntryDTO
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 @Entity(
     tableName = "habit_log_entry",
@@ -22,11 +21,5 @@ import java.time.LocalDateTime
 data class HabitLogEntry(
     @PrimaryKey(autoGenerate = true) val uid : Int = 0,
     @ColumnInfo(name = "uid_habit") var uidHabit : Int,
-    @ColumnInfo(name = "date") var date : LocalDateTime,
-) {
-    fun toDto() : HabitLogEntryDTO {
-        return HabitLogEntryDTO(
-            date=date
-        )
-    }
-}
+    @ColumnInfo(name = "date") var date : LocalDate,
+)
