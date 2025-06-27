@@ -75,7 +75,7 @@ class HabitAdapter(
                         log = logList
                     ))
                 }
-                notifyDataSetChanged()
+                notifyItemChanged(position)
             }
 
             TYPE_PLACEHOLDER -> PlaceholderViewHolder(
