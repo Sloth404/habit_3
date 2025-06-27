@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -24,21 +23,19 @@ class NotificationHelper {
      * @param context Application context used to access system services.
      */
     fun createNotificationChannel(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Define the notification channel with ID, name, and importance level
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                "Habit Notification",
-                NotificationManager.IMPORTANCE_DEFAULT
-            ).apply {
-                description = "Notifications for Habit^3"
-            }
-
-            // Register the channel with the system notification manager
-            val notificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+        // Define the notification channel with ID, name, and importance level
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "Habit Notification",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = "Notifications for Habit^3"
         }
+
+        // Register the channel with the system notification manager
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 
     /**
