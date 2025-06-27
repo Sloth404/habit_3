@@ -22,9 +22,14 @@ class SharedPreferencesManager {
         private const val KEY_PUSH_CUSTOM = "push_custom"
 
         // Keys for theme preferences
-        private const val KEY_ICON = "icon_theme"  // Boolean for icon theme (dark/light)
-        private const val KEY_APP = "app_theme"    // Boolean for app theme (dark/light)
-        private const val KEY_THEME = "theme_mode" // Int for actual theme mode applied
+        private const val KEY_ICON = "icon_theme"   // Boolean for icon theme (dark/light)
+        private const val KEY_APP = "app_theme"     // Boolean for app theme (dark/light)
+        private const val KEY_THEME = "theme_mode"  // Int for actual theme mode applied
+        private const val KEY_SCREEN = "app_screen" // Screen for reloading the screen after theme change
+
+        // Keys for Settings menu statuses
+        private const val KEY_SETTINGS_PUSH = "settings_menu_pn"        // Boolean; true if push notification menu is open
+        private const val KEY_SETTINGS_THEME = "settings_menu_theme"    // Boolean; true if theme menu ís open
 
         /**
          * Saves push notification times and theme preferences to SharedPreferences.
@@ -93,6 +98,50 @@ class SharedPreferencesManager {
             AppCompatDelegate.setDefaultNightMode(mode)
             context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit {
                 putInt(KEY_THEME, mode)
+            }
+        }
+
+        fun loadLastScreen(context: Context) : String? {
+            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            val screen = prefs.getString(KEY_SCREEN, Screen.OVERVIEW.value)
+
+            // reset last screen, so the user does not always land in settings/statistics screen
+            // after reopening the app
+            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit {
+                putString(KEY_SCREEN, null)
+            }
+            return screen
+        }
+
+        fun setLastScreen(context: Context, screen : Screen) {
+            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit {
+                putString(KEY_SCREEN, screen.value)
+            }
+        }
+
+        fun loadSettingsSelectionStates(context: Context) : Map<String, Boolean> {
+            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            val menuPush = prefs.getBoolean(KEY_SETTINGS_PUSH, false)
+            val menuTheme = prefs.getBoolean(KEY_SETTINGS_THEME, false)
+
+            return buildMap {
+                put(SettingsSelections.PUSH.id, menuPush)
+                put(SettingsSelections.THEME.id, menuTheme)
+            }
+        }
+
+        /**
+         * Persists which menus in the settings were open before reloading the activity (e.g. when
+         * the theme is switched). This way the menus hold their state nevertheless.
+         *
+         * @param context Context to access SharedPreferences.
+         * @param menuPush determines if the menu was open/clos (true/false)
+         * @param menuTheme determines if the menu was open/clos (true/false)
+         * */
+        fun setSettingsSelectionStates(context: Context, menuPush: Boolean, menuTheme: Boolean) {
+            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit {
+                putBoolean(KEY_SETTINGS_PUSH, menuPush)
+                putBoolean(KEY_SETTINGS_THEME, menuTheme)
             }
         }
     }

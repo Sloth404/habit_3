@@ -1,4 +1,4 @@
-package com.moehr.habit_3.viewmodel
+package com.moehr.habit_3.data.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel

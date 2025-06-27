@@ -1,9 +1,8 @@
-package com.moehr.habit_3.data.model
+package com.moehr.habit_3.data.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.moehr.habit_3.data.repository.HabitRepository
-import com.moehr.habit_3.viewmodel.HabitViewModel
 
 /**
  * Factory class responsible for creating instances of [HabitViewModel].

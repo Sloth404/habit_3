@@ -13,11 +13,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.moehr.habit_3.data.model.Habit
 import com.moehr.habit_3.data.model.HabitType
-import com.moehr.habit_3.data.model.HabitViewModelFactory
+import com.moehr.habit_3.data.viewmodel.HabitViewModelFactory
 import com.moehr.habit_3.data.model.RepeatPattern
 import com.moehr.habit_3.data.model.dto.ReminderDTO
 import com.moehr.habit_3.ui.edit.EditItem
-import com.moehr.habit_3.viewmodel.HabitViewModel
+import com.moehr.habit_3.data.viewmodel.HabitViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 

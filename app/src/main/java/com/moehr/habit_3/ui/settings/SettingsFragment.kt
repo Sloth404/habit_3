@@ -3,6 +3,7 @@ package com.moehr.habit_3.ui.settings
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +18,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import com.moehr.habit_3.R
+import com.moehr.habit_3.data.preferences.Screen
+import com.moehr.habit_3.data.preferences.SettingsSelections
 import com.moehr.habit_3.data.preferences.SharedPreferencesManager
 
 /**
@@ -39,6 +42,10 @@ class SettingsFragment : Fragment() {
     // Button to save the settings
     private lateinit var btnSettingsSave: Button
 
+    // Selection menu states (open/close - true/false)
+    private var pushSelectionOpen = false
+    private var themeSelectionOpen = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -52,9 +59,22 @@ class SettingsFragment : Fragment() {
         pushSection = view.findViewById(R.id.push_section)
         themeSection = view.findViewById(R.id.theme_section)
 
-        // Start with both sections collapsed
-        pushSection.visibility = View.GONE
-        themeSection.visibility = View.GONE
+        // Initialize Selection States
+        val selectionStates = SharedPreferencesManager.loadSettingsSelectionStates(requireContext())
+        pushSelectionOpen = selectionStates[SettingsSelections.PUSH.id] ?: false
+        themeSelectionOpen = selectionStates[SettingsSelections.THEME.id] ?: false
+
+        Log.d("SELECTION_STATES_LOAD", "Push: $pushSelectionOpen")
+        Log.d("SELECTION_STATES_LOAD", "Theme: $themeSelectionOpen")
+
+        pushSection.visibility = if (pushSelectionOpen) View.VISIBLE else View.GONE
+        themeSection.visibility = if (themeSelectionOpen) View.VISIBLE else View.GONE
+
+        SharedPreferencesManager.setSettingsSelectionStates(
+            requireContext(),
+            menuPush = false,
+            menuTheme = false
+        )
 
         // Initialize switches and buttons
         appSwitch = view.findViewById(R.id.switch_app)
@@ -63,6 +83,17 @@ class SettingsFragment : Fragment() {
         // Set listener for theme switch
         appSwitch.setOnCheckedChangeListener { _, isChecked ->
             appSwitch.text = if (isChecked) getString(R.string.settings_dark) else getString(R.string.settings_light)
+            SharedPreferencesManager.setLastScreen(
+                requireContext(),
+                Screen.SETTINGS
+            )
+            Log.d("SELECTION_STATES_SWITCH", "Push: $pushSelectionOpen")
+            Log.d("SELECTION_STATES_SWITCH", "Theme: $themeSelectionOpen")
+            SharedPreferencesManager.setSettingsSelectionStates(
+                requireContext(),
+                pushSelectionOpen,
+                themeSelectionOpen
+            )
             SharedPreferencesManager.setTheme(
                 requireContext(),
                 if (isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
@@ -158,10 +189,12 @@ class SettingsFragment : Fragment() {
     private fun setupToggleSections() {
         pushToggle.setOnClickListener {
             toggleSection(pushSection)
+            pushSelectionOpen = !pushSelectionOpen
         }
 
         themeToggle.setOnClickListener {
             toggleSection(themeSection)
+            themeSelectionOpen = !themeSelectionOpen
         }
     }
 

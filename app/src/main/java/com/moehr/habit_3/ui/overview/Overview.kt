@@ -19,8 +19,8 @@ import com.moehr.habit_3.EditHabitActivity
 import com.moehr.habit_3.MainApplication
 import com.moehr.habit_3.R
 import com.moehr.habit_3.data.model.Habit
-import com.moehr.habit_3.data.model.HabitViewModelFactory
-import com.moehr.habit_3.viewmodel.HabitViewModel
+import com.moehr.habit_3.data.viewmodel.HabitViewModelFactory
+import com.moehr.habit_3.data.viewmodel.HabitViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale

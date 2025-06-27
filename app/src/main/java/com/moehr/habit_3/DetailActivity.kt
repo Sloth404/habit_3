@@ -9,10 +9,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.moehr.habit_3.data.model.Habit
-import com.moehr.habit_3.data.model.HabitViewModelFactory
+import com.moehr.habit_3.data.viewmodel.HabitViewModelFactory
 import com.moehr.habit_3.ui.tile_tracker.HabitCalendarAdapter
 import com.moehr.habit_3.ui.tile_tracker.HabitDay
-import com.moehr.habit_3.viewmodel.HabitViewModel
+import com.moehr.habit_3.data.viewmodel.HabitViewModel
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
