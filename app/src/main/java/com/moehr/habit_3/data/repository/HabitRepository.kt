@@ -112,7 +112,7 @@ class HabitRepository(
         // 4.2.1 only one entry is allowed to be edited and
         // 4.2.2 only today's entry is allowed to be edited
         if ( logsToInsert.isNotEmpty() && (logsToInsert.size > 1 || logsToInsert[0].date != LocalDate.now())) {
-            throw IllegalArgumentException("Only todays log entry is allowed to be updated")
+            throw IllegalArgumentException("Only today's log entry is allowed to be updated")
         }
 
         // 4.3 Insert the logs that are not already in the DB
