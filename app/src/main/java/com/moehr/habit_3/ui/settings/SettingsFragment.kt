@@ -49,7 +49,7 @@ class SettingsFragment : Fragment() {
 
     // Id keys for savedInstanceState
     private val KEY_PUSH : String = "isPushSelectionOpen"
-    private val KEY_TEHEME : String = "isThemeSelectionOpen"
+    private val KEY_THEME : String = "isThemeSelectionOpen"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,7 +66,7 @@ class SettingsFragment : Fragment() {
 
         // Initialize Selection States
         isPushSelectionOpen = savedInstanceState?.getBoolean(KEY_PUSH) ?: false
-        isThemeSelectionOpen = savedInstanceState?.getBoolean(KEY_TEHEME) ?: false
+        isThemeSelectionOpen = savedInstanceState?.getBoolean(KEY_THEME) ?: false
         pushSection.visibility = if (isPushSelectionOpen) View.VISIBLE else View.GONE
         themeSection.visibility = if (isThemeSelectionOpen) View.VISIBLE else View.GONE
 
@@ -145,7 +145,7 @@ class SettingsFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(KEY_PUSH, isPushSelectionOpen)
-        outState.putBoolean(KEY_TEHEME, isThemeSelectionOpen)
+        outState.putBoolean(KEY_THEME, isThemeSelectionOpen)
     }
 
     /**
