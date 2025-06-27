@@ -82,14 +82,15 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="32dp"
-            android:focusable="false"
             android:fontFamily="@font/jetbrains_mono"
             android:hint="@string/settings_morning_time"
-            android:inputType="time"
             android:textColor="@color/dark_grey"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none" />
 
         <TextView
             android:id="@+id/textView13"
@@ -102,21 +103,22 @@
             android:textColor="@color/dark_grey"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView9" />
+            app:layout_constraintTop_toBottomOf="@+id/textView9"/>
 
         <EditText
             android:id="@+id/editText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="32dp"
-            android:focusable="false"
             android:fontFamily="@font/jetbrains_mono"
             android:hint="@string/settings_noon_time"
-            android:inputType="time"
             android:textColor="@color/dark_grey"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editText4" />
+            app:layout_constraintTop_toBottomOf="@+id/editText4"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none" />
 
         <TextView
             android:id="@+id/textView14"
@@ -136,14 +138,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="32dp"
-            android:focusable="false"
             android:fontFamily="@font/jetbrains_mono"
             android:hint="@string/settings_evening_time"
-            android:inputType="time"
             android:textColor="@color/dark_grey"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editText" />
+            app:layout_constraintTop_toBottomOf="@+id/editText"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none" />
 
         <TextView
             android:id="@+id/textView15"
@@ -164,15 +167,16 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="32dp"
             android:layout_marginBottom="8dp"
-            android:focusable="false"
             android:fontFamily="@font/jetbrains_mono"
             android:hint="@string/settings_custom_time"
-            android:inputType="time"
             android:textColor="@color/dark_grey"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editText2" />
+            app:layout_constraintTop_toBottomOf="@+id/editText2"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout

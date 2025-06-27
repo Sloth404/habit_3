@@ -1,7 +1,9 @@
 package com.moehr.habit_3.ui.settings
 
 import android.app.AlertDialog
+import android.app.TimePickerDialog
 import android.content.Context
+import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -19,6 +21,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import com.moehr.habit_3.R
 import com.moehr.habit_3.data.preferences.SharedPreferencesManager
+import java.util.Calendar
+import java.util.Locale
 
 /**
  * Fragment that manages user settings including theme, notifications, and dialogs.
@@ -107,6 +111,20 @@ class SettingsFragment : Fragment() {
         // Setup expandable toggles for sections
         setupToggleSections()
 
+        // Add on click listeners to the time input fields
+        view.findViewById<EditText>(R.id.editText4).setOnClickListener {
+            showTimePicker(it as EditText)
+        }
+        view.findViewById<EditText>(R.id.editText).setOnClickListener {
+            showTimePicker(it as EditText)
+        }
+        view.findViewById<EditText>(R.id.editText2).setOnClickListener {
+            showTimePicker(it as EditText)
+        }
+        view.findViewById<EditText>(R.id.editText3).setOnClickListener {
+            showTimePicker(it as EditText)
+        }
+
         return view
     }
 
@@ -193,5 +211,18 @@ class SettingsFragment : Fragment() {
      */
     private fun toggleSection(section: ConstraintLayout) {
         section.visibility = if (section.isVisible) View.GONE else View.VISIBLE
+    }
+
+    private fun showTimePicker(targetEditText: EditText) {
+        val calendar = Calendar.getInstance()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+
+        val timePicker = TimePickerDialog(requireContext(), { _, selectedHour, selectedMinute ->
+            val formattedTime = String.format(Locale.US, "%02d:%02d", selectedHour, selectedMinute)
+            targetEditText.setText(formattedTime)
+        }, hour, minute, true) // true for 24-hour format
+
+        timePicker.show()
     }
 }
