@@ -169,7 +169,7 @@ class EditSectionAdapter(
              */
             fun updateButtons() {
                 val isEnabled = swPN.isChecked
-                val selected = item.timesOfDay.firstOrNull()
+                val selected = item.timeOfDay
 
                 buttons.forEach { (label, button) ->
                     button.isEnabled = isEnabled
@@ -187,8 +187,8 @@ class EditSectionAdapter(
                 item.pushEnabled = isChecked
 
                 // If enabling push notifications with no selected time, default to MORNING
-                if (isChecked && item.timesOfDay.isEmpty()) {
-                    item.timesOfDay = listOf("MORNING")
+                if (isChecked && item.timeOfDay.isEmpty()) {
+                    item.timeOfDay = "MORNING"
                 }
 
                 updateButtons()
@@ -198,7 +198,7 @@ class EditSectionAdapter(
              * Handles click on a time button to select that time for notification.
              */
             fun handleTimeClick(label: String) {
-                item.timesOfDay = listOf(label)
+                item.timeOfDay = label
                 updateButtons()
             }
 

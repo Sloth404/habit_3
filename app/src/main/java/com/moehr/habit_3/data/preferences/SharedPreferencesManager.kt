@@ -46,10 +46,10 @@ class SharedPreferencesManager {
 
             // Save all preferences atomically
             prefs.edit().apply {
-                putString(PushKeys.MORNING.id, pushMorning)
-                putString(PushKeys.NOON.id, pushNoon)
-                putString(PushKeys.EVENING.id, pushEvening)
-                putString(PushKeys.CUSTOM.id, pushCustom)
+                putString(PushNotificationKeys.MORNING.id, pushMorning)
+                putString(PushNotificationKeys.NOON.id, pushNoon)
+                putString(PushNotificationKeys.EVENING.id, pushEvening)
+                putString(PushNotificationKeys.CUSTOM.id, pushCustom)
                 putBoolean(KEY_ICON, icon)
                 putBoolean(KEY_APP, app)
                 apply()
@@ -58,16 +58,16 @@ class SharedPreferencesManager {
 
         fun loadPushSettings(context: Context) : Map<String, String> {
             val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            val pushMorning = prefs.getString(PushKeys.MORNING.id, "")
-            val pushNoon = prefs.getString(PushKeys.NOON.id, "")
-            val pushEvening = prefs.getString(PushKeys.EVENING.id, "")
-            val pushCustom = prefs.getString(PushKeys.CUSTOM.id, "")
+            val pushMorning = prefs.getString(PushNotificationKeys.MORNING.id, "")
+            val pushNoon = prefs.getString(PushNotificationKeys.NOON.id, "")
+            val pushEvening = prefs.getString(PushNotificationKeys.EVENING.id, "")
+            val pushCustom = prefs.getString(PushNotificationKeys.CUSTOM.id, "")
 
             return buildMap {
-                put(PushKeys.MORNING.id, pushMorning ?: "")
-                put(PushKeys.NOON.id, pushNoon ?: "")
-                put(PushKeys.EVENING.id, pushEvening ?: "")
-                put(PushKeys.CUSTOM.id, pushCustom ?: "")
+                put(PushNotificationKeys.MORNING.id, pushMorning ?: "")
+                put(PushNotificationKeys.NOON.id, pushNoon ?: "")
+                put(PushNotificationKeys.EVENING.id, pushEvening ?: "")
+                put(PushNotificationKeys.CUSTOM.id, pushCustom ?: "")
             }
         }
 

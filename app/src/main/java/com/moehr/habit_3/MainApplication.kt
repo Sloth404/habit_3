@@ -15,7 +15,6 @@ class MainApplication : Application() {
     val database by lazy { AppDatabase.getDatabase(this) }
     val habitRepository by lazy { HabitRepository(
         database.habitDao(),
-        database.habitLogEntryDao(),
-        database.reminderDao())
-    }
+        database.habitLogEntryDao()
+    )}
 }

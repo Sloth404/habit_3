@@ -4,34 +4,25 @@ import com.moehr.habit_3.data.model.entity.HabitEntity
 import com.moehr.habit_3.data.model.Habit
 import com.moehr.habit_3.data.model.dao.HabitDao
 import com.moehr.habit_3.data.model.dao.HabitLogEntryDao
-import com.moehr.habit_3.data.model.dao.ReminderDao
 import com.moehr.habit_3.data.model.dto.HabitLogEntryDTO
-import com.moehr.habit_3.data.model.dto.ReminderDTO
 import com.moehr.habit_3.data.model.entity.HabitLogEntry
-import com.moehr.habit_3.data.model.entity.Reminder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
 class HabitRepository(
     private val habitDao : HabitDao,
     private val habitLogEntryDao : HabitLogEntryDao,
-    private val reminderDao: ReminderDao
 ) {
     private val allHabitEntitiesFlow : Flow<List<HabitEntity>> = habitDao.getAll()
-    private val allReminderTimesFlow : Flow<List<Reminder>> = reminderDao.getAll()
     private val allLogEntriesFlow : Flow<List<HabitLogEntry>> = habitLogEntryDao.getAll()
 
-    private val fullHabits : Flow<List<Habit>> = combine(allHabitEntitiesFlow, allReminderTimesFlow, allLogEntriesFlow) { habits, reminders, logEntries ->
+    private val fullHabits : Flow<List<Habit>> = combine(allHabitEntitiesFlow, allLogEntriesFlow) { habits, logEntries ->
         habits.map { habit ->
-            val habitReminderTimes = reminders
-                .filter { it.uidHabit == habit.uid }
-                .map { it.toDto() }
-
             val habitLog = logEntries
                 .filter { it.uidHabit == habit.uid }
                 .map { it.toDto() }
 
-            habitEntityToHabit(habit, habitReminderTimes, habitLog)
+            habitEntityToHabit(habit, habitLog)
         }
     }
 
@@ -46,19 +37,11 @@ class HabitRepository(
             target = item.target,
             unit = item.unit,
             repeat = item.repeat,
+            reminder = item.reminder,
             createdAt = item.createdAt,
             motivationalNote = item.motivationalNote
         )
-        val habitId = habitDao.insert(habit).toInt()
-
-        item.reminders.forEach { reminder ->
-            val newReminder = Reminder(
-                uidHabit = habitId,
-                hour = reminder.hour,
-                minute = reminder.minute
-            )
-            reminderDao.insert(newReminder)
-        }
+        habitDao.insert(habit).toInt()
     }
 
     suspend fun deleteHabit(item : Habit) {
@@ -69,6 +52,7 @@ class HabitRepository(
             target = item.target,
             unit = item.unit,
             repeat = item.repeat,
+            reminder = item.reminder,
             createdAt = item.createdAt,
             motivationalNote = item.motivationalNote
         )
@@ -84,43 +68,11 @@ class HabitRepository(
             target = item.target,
             unit = item.unit,
             repeat = item.repeat,
+            reminder = item.reminder,
             createdAt = item.createdAt,
             motivationalNote = item.motivationalNote
         )
         habitDao.update(habit)
-
-        // Update the reminder table.
-        // 1. Get current reminders.
-        val currentReminders : List<Reminder> = reminderDao.getAllByHabitUid(item.id.toInt())
-
-        // 2. Get list of new reminders.
-        val newReminders = item.reminders.map { dto ->
-            Reminder(
-                uidHabit = item.id.toInt(),
-                hour = dto.hour,
-                minute = dto.minute
-            )
-        }
-
-        // 3.1 Filter for deprecated reminders.
-        val remindersToDelete = currentReminders.filter { old ->
-            newReminders.none {
-                it.hour == old.hour && it.minute == old.minute
-            }
-        }
-
-        // 3.2 Delete deprecated reminders.
-        remindersToDelete.forEach { reminderDao.delete(it) }
-
-        // 4.1 Filter for reminders to add.
-        val remindersToInsert = newReminders.filter { new ->
-            currentReminders.none {
-                it.hour == new.hour && it.minute == new.minute
-            }
-        }
-
-        // 4.2 Insert the reminders that are not already in the DB
-        remindersToInsert.forEach { reminderDao.insert(it) }
 
         // Update the log table.
         // 1. Get current logs
@@ -157,15 +109,13 @@ class HabitRepository(
 
     suspend fun getHabitById(id : Long) : Habit {
         val habitEntity = habitDao.getById(id.toInt())
-        val reminders = reminderDao.getAllByHabitUid(habitEntity.uid)
-        val reminderDtos = reminders.map { it.toDto() }
         val habitLogs = habitLogEntryDao.getAllByHabitUid(habitEntity.uid)
         val habitLogDtos = habitLogs.map { it.toDto() }
 
-        return habitEntityToHabit(habitEntity, reminderDtos, habitLogDtos)
+        return habitEntityToHabit(habitEntity, habitLogDtos)
     }
 
-    private fun habitEntityToHabit(habit : HabitEntity, reminderDtos : List<ReminderDTO>, logEntryDtos : List<HabitLogEntryDTO>) : Habit {
+    private fun habitEntityToHabit(habit : HabitEntity, logEntryDtos : List<HabitLogEntryDTO>) : Habit {
         return Habit(
             id = habit.uid.toLong(),
             name = habit.name,
@@ -175,7 +125,7 @@ class HabitRepository(
             repeat = habit.repeat,
             createdAt = habit.createdAt,
             motivationalNote = habit.motivationalNote,
-            reminders = reminderDtos,
+            reminder = habit.reminder,
             log = logEntryDtos
         )
     }

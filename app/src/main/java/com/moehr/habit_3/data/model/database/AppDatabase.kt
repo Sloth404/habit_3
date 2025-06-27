@@ -7,10 +7,8 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.moehr.habit_3.data.model.dao.HabitDao
 import com.moehr.habit_3.data.model.dao.HabitLogEntryDao
-import com.moehr.habit_3.data.model.dao.ReminderDao
 import com.moehr.habit_3.data.model.entity.HabitEntity
 import com.moehr.habit_3.data.model.entity.HabitLogEntry
-import com.moehr.habit_3.data.model.entity.Reminder
 
 /**
  * The main Room database for the app.
@@ -23,12 +21,11 @@ import com.moehr.habit_3.data.model.entity.Reminder
  *
  * @see RoomDatabase
  */
-@Database(entities = [HabitEntity::class, HabitLogEntry::class, Reminder::class], version = 1)
+@Database(entities = [HabitEntity::class, HabitLogEntry::class], version = 2)
 @TypeConverters(Converters::class)
 abstract class  AppDatabase : RoomDatabase() {
     abstract fun habitDao() : HabitDao
     abstract fun habitLogEntryDao() : HabitLogEntryDao
-    abstract fun reminderDao() : ReminderDao
 
     companion object {
         @Volatile

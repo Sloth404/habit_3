@@ -15,6 +15,7 @@ data class HabitEntity (
     @ColumnInfo(name = "target") val target : Int,
     @ColumnInfo(name = "unit") val unit : String,
     @ColumnInfo(name = "repeat") val repeat : RepeatPattern,
+    @ColumnInfo(name = "reminder") val reminder : String?,
     @ColumnInfo(name = "created_at") val createdAt : LocalDateTime,
     @ColumnInfo(name = "motivational_note") val motivationalNote : String
 )

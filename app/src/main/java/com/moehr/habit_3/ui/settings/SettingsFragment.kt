@@ -18,7 +18,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import com.moehr.habit_3.R
-import com.moehr.habit_3.data.preferences.PushKeys
+import com.moehr.habit_3.data.preferences.PushNotificationKeys
 import com.moehr.habit_3.data.preferences.SharedPreferencesManager
 import java.util.Calendar
 import java.util.Locale
@@ -124,16 +124,16 @@ class SettingsFragment : Fragment() {
         val pushNotificationTimes: Map<String, String> = SharedPreferencesManager.loadPushSettings(requireContext())
         pushNotificationTimes.forEach { time ->
             when(time.key) {
-                PushKeys.MORNING.id -> {
+                PushNotificationKeys.MORNING.id -> {
                     if (time.value.isNotEmpty()) view.findViewById<EditText>(R.id.editTimeMorning).setText(time.value)
                 }
-                PushKeys.NOON.id -> {
+                PushNotificationKeys.NOON.id -> {
                     if (time.value.isNotEmpty()) view.findViewById<EditText>(R.id.editTimeNoon).setText(time.value)
                 }
-                PushKeys.EVENING.id -> {
+                PushNotificationKeys.EVENING.id -> {
                     if (time.value.isNotEmpty()) view.findViewById<EditText>(R.id.editTimeEvening).setText(time.value)
                 }
-                PushKeys.CUSTOM.id -> {
+                PushNotificationKeys.CUSTOM.id -> {
                     if (time.value.isNotEmpty()) view.findViewById<EditText>(R.id.editTimeCustom).setText(time.value)
                 }
             }
