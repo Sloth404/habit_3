@@ -71,6 +71,17 @@ class SharedPreferencesManager {
             }
         }
 
+        fun loadSpecificPushSetting(context: Context, notificationId: String) : String {
+            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            return when (notificationId) {
+                PushNotificationKeys.MORNING.id -> prefs.getString(notificationId, "") ?: ""
+                PushNotificationKeys.NOON.id -> prefs.getString(notificationId, "") ?: ""
+                PushNotificationKeys.EVENING.id -> prefs.getString(notificationId, "") ?: ""
+                PushNotificationKeys.CUSTOM.id -> prefs.getString(notificationId, "") ?: ""
+                else -> ""
+            }
+        }
+
         /**
          * Loads the saved theme mode from preferences and applies it.
          * Defaults to follow system setting if no preference found.
