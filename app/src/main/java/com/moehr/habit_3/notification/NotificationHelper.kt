@@ -114,8 +114,8 @@ class NotificationHelper {
         private const val CHANNEL_ID = "habit_channel"
 
         // Notification IDs to distinguish different notifications
-        private const val MOTIVATION_NOTIFICATION_ID = 1
-        private const val REMINDER_NOTIFICATION_ID = 2
+        internal const val MOTIVATION_NOTIFICATION_ID = 1
+        internal const val REMINDER_NOTIFICATION_ID = 2
 
         // Intent action strings to identify user responses
         const val ACTION_DID_DO_IT = "ACTION_DID_DO_IT"

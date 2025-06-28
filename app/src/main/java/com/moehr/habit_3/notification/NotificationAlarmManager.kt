@@ -57,7 +57,7 @@ class NotificationAlarmManager(
                         add(Calendar.DATE, 1)
                     }
                     */
-                    set(Calendar.HOUR_OF_DAY, 22)
+                    set(Calendar.HOUR_OF_DAY, 0)
                     set(Calendar.MINUTE, 6)
                     set(Calendar.SECOND, 0)
                     while (before(Calendar.getInstance())) {
