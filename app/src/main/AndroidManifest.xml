@@ -25,6 +25,9 @@
         </activity>
         <activity android:name=".EditHabitActivity"/>
         <activity android:name=".DetailActivity"/>
-        <receiver android:name=".notification.HabitActionReceiver"/>
+        <receiver android:name=".notification.HabitActionReceiver"
+            android:enabled="true"/>
+        <receiver android:name=".notification.NotificationAlarmReciever"
+            android:enabled="true" />
     </application>
 </manifest>

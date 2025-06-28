@@ -1,14 +1,10 @@
 package com.moehr.habit_3.notification
 
-import android.Manifest
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
 import android.util.Log
-import androidx.annotation.RequiresPermission
-import androidx.core.app.ActivityCompat
 import com.moehr.habit_3.data.model.Habit
 import com.moehr.habit_3.data.model.RepeatPattern
 import com.moehr.habit_3.data.preferences.SharedPreferencesManager
@@ -39,33 +35,45 @@ class NotificationAlarmManager(
         if (alarmManager.canScheduleExactAlarms()) {
             val intent = Intent(context, NotificationAlarmReciever::class.java).apply {
                 action = ACTION_PUSH_REMINDER
-            }.putExtra("habit", habit)
+            }.putExtra("habit_id", habit.id)
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
-                0,
+                habit.id.toInt(),
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
             val time = SharedPreferencesManager.loadSpecificPushSetting(context, habit.reminder ?: "")
-            val calendar = Calendar.getInstance().apply {
-                timeInMillis = System.currentTimeMillis()
-                // Update hh:mm:ss of the calendar.
-                set(Calendar.HOUR_OF_DAY, if (time.isNotEmpty()) time.split(':')[0].toInt() else 9)
-                set(Calendar.MINUTE, if (time.isNotEmpty()) time.split(':')[1].toInt() else 0)
-                set(Calendar.SECOND, 0)
-                // If current time is past the hour of the alarm, update it to trigger the next day.
-                if (before(Calendar.getInstance())) {
-                    add(Calendar.DATE, 1)
+            if (time.isNotEmpty()) {
+                val calendar = Calendar.getInstance().apply {
+                    timeInMillis = System.currentTimeMillis()
+                    // Update hh:mm:ss of the calendar.
+                    /*
+                    set(Calendar.HOUR_OF_DAY, if (time.isNotEmpty()) time.split(':')[0].toInt() else 9)
+                    set(Calendar.MINUTE, if (time.isNotEmpty()) time.split(':')[1].toInt() else 0)
+                    set(Calendar.SECOND, 0)
+                    // If current time is past the hour of the alarm, update it to trigger the next day.
+                    if (before(Calendar.getInstance())) {
+                        add(Calendar.DATE, 1)
+                    }
+                    */
+                    set(Calendar.HOUR_OF_DAY, 22)
+                    set(Calendar.MINUTE, 6)
+                    set(Calendar.SECOND, 0)
+                    while (before(Calendar.getInstance())) {
+                        add(Calendar.MINUTE, 1)
+                    }
                 }
-            }
 
-            // setExactAndAllowWhileIdle() to ensure alarms fire even in Doze mode.
-            alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                calendar.timeInMillis,
-                pendingIntent
-            )
+                // setExactAndAllowWhileIdle() to ensure alarms fire even in Doze mode.
+                alarmManager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    calendar.timeInMillis,
+                    pendingIntent
+                )
+            } else {
+                Log.d("ALARM_MANAGER", "Could not get the time for scheduling.")
+            }
         } else {
             Log.d("ALARM_MANAGER", "Rights for setting exact alarms not given.")
         }

@@ -61,7 +61,7 @@
     <string name="settings_dark">Dark</string>
     <string name="settings_icon">Icon</string>
     <string name="motification_text">You\'re doing great!</string>
-    <string name="motivation_text">You\'re doing great!</string>
+    <string name="motivation_text">You\'re doing great! Don\'t forget your habit </string>
     <string name="reminder_text">Don\'t forget to log your habit!</string>
     <string name="did_it">Did do it</string>
     <string name="didnt_do_it">Didn\'t do it</string>

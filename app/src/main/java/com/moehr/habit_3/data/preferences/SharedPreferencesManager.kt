@@ -46,10 +46,10 @@ class SharedPreferencesManager {
 
             // Save all preferences atomically
             prefs.edit().apply {
-                putString(PushNotificationKeys.MORNING.id, pushMorning)
-                putString(PushNotificationKeys.NOON.id, pushNoon)
-                putString(PushNotificationKeys.EVENING.id, pushEvening)
-                putString(PushNotificationKeys.CUSTOM.id, pushCustom)
+                putString(PushNotificationKeys.TIME_MORNING.id, pushMorning)
+                putString(PushNotificationKeys.TIME_NOON.id, pushNoon)
+                putString(PushNotificationKeys.TIME_EVENING.id, pushEvening)
+                putString(PushNotificationKeys.TIME_CUSTOM.id, pushCustom)
                 putBoolean(KEY_ICON, icon)
                 putBoolean(KEY_APP, app)
                 apply()
@@ -58,26 +58,26 @@ class SharedPreferencesManager {
 
         fun loadPushSettings(context: Context) : Map<String, String> {
             val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            val pushMorning = prefs.getString(PushNotificationKeys.MORNING.id, "")
-            val pushNoon = prefs.getString(PushNotificationKeys.NOON.id, "")
-            val pushEvening = prefs.getString(PushNotificationKeys.EVENING.id, "")
-            val pushCustom = prefs.getString(PushNotificationKeys.CUSTOM.id, "")
+            val pushMorning = prefs.getString(PushNotificationKeys.TIME_MORNING.id, "")
+            val pushNoon = prefs.getString(PushNotificationKeys.TIME_NOON.id, "")
+            val pushEvening = prefs.getString(PushNotificationKeys.TIME_EVENING.id, "")
+            val pushCustom = prefs.getString(PushNotificationKeys.TIME_CUSTOM.id, "")
 
             return buildMap {
-                put(PushNotificationKeys.MORNING.id, pushMorning ?: "")
-                put(PushNotificationKeys.NOON.id, pushNoon ?: "")
-                put(PushNotificationKeys.EVENING.id, pushEvening ?: "")
-                put(PushNotificationKeys.CUSTOM.id, pushCustom ?: "")
+                put(PushNotificationKeys.TIME_MORNING.id, pushMorning ?: "")
+                put(PushNotificationKeys.TIME_NOON.id, pushNoon ?: "")
+                put(PushNotificationKeys.TIME_EVENING.id, pushEvening ?: "")
+                put(PushNotificationKeys.TIME_CUSTOM.id, pushCustom ?: "")
             }
         }
 
         fun loadSpecificPushSetting(context: Context, notificationId: String) : String {
             val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             return when (notificationId) {
-                PushNotificationKeys.MORNING.id -> prefs.getString(notificationId, "") ?: ""
-                PushNotificationKeys.NOON.id -> prefs.getString(notificationId, "") ?: ""
-                PushNotificationKeys.EVENING.id -> prefs.getString(notificationId, "") ?: ""
-                PushNotificationKeys.CUSTOM.id -> prefs.getString(notificationId, "") ?: ""
+                PushNotificationKeys.TIME_MORNING.id -> prefs.getString(notificationId, "") ?: ""
+                PushNotificationKeys.TIME_NOON.id -> prefs.getString(notificationId, "") ?: ""
+                PushNotificationKeys.TIME_EVENING.id -> prefs.getString(notificationId, "") ?: ""
+                PushNotificationKeys.TIME_CUSTOM.id -> prefs.getString(notificationId, "") ?: ""
                 else -> ""
             }
         }

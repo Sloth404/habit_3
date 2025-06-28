@@ -21,7 +21,7 @@ import com.moehr.habit_3.data.model.entity.HabitLogEntry
  *
  * @see RoomDatabase
  */
-@Database(entities = [HabitEntity::class, HabitLogEntry::class], version = 2)
+@Database(entities = [HabitEntity::class, HabitLogEntry::class], version = 1)
 @TypeConverters(Converters::class)
 abstract class  AppDatabase : RoomDatabase() {
     abstract fun habitDao() : HabitDao

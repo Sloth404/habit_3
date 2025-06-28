@@ -1,12 +1,18 @@
 package com.moehr.habit_3
 
 import android.Manifest
+import android.app.AlarmManager
+import android.content.Context
 import android.os.Bundle
+import android.content.Intent
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.moehr.habit_3.data.preferences.SharedPreferencesManager
+import com.moehr.habit_3.data.viewmodel.HabitViewModel
+import com.moehr.habit_3.notification.HabitActionReceiver
+import com.moehr.habit_3.notification.NotificationAlarmManager
 import com.moehr.habit_3.notification.NotificationHelper
 import com.moehr.habit_3.ui.overview.Overview
 import com.moehr.habit_3.ui.settings.SettingsFragment
@@ -50,6 +56,9 @@ class MainActivity : AppCompatActivity() {
         // Request POST_NOTIFICATIONS permission if necessary
         requestNotificationPermission()
 
+        // Request SCHEDULE_EXACT_ALARM permission if necessary
+        requestExactAlarmPermission()
+
         // create the notification chanel
         NotificationHelper().createNotificationChannel(this)
     }
@@ -69,6 +78,14 @@ class MainActivity : AppCompatActivity() {
     private fun requestNotificationPermission() {
         if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1001)
+        }
+    }
+
+    private fun requestExactAlarmPermission() {
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        if (!alarmManager.canScheduleExactAlarms()) {
+            val intent = Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+            startActivity(intent)
         }
     }
 }

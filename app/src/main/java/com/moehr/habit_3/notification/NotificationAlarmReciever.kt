@@ -6,15 +6,29 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
+import com.moehr.habit_3.MainApplication
 import com.moehr.habit_3.data.model.Habit
+import kotlinx.coroutines.runBlocking
 
 /**
- * Recieves notification alarms from [NotificationAlarmManager] and triggers notifications via [NotificationHelper]
+ * Recieves notification alarms from [NotificationAlarmManager] and triggers notifications via [NotificationHelper].
+ *
+ * `runBlocking {...}` is ok, because the app is in background and no UI interaction would
+ * be blocked.
  * */
 class NotificationAlarmReciever : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action
-        val habit = intent.getSerializableExtra("habit", Habit::class.java)
+        val habitId = intent.getLongExtra("habit_id", -1)
+        val app = context.applicationContext as MainApplication
+        val habitRepository = app.habitRepository
+
+        if (habitId == -1L) return
+        val habit: Habit? = runBlocking {
+            habitRepository.getHabitById(habitId)
+        }
+
+        // Ensure no notification will be sent for nonexistent habits
         if (habit != null) {
             when (action) {
                 NotificationAlarmManager.ACTION_PUSH_REMINDER -> {
@@ -36,5 +50,6 @@ class NotificationAlarmReciever : BroadcastReceiver() {
                 }
             }
         }
+
     }
 }

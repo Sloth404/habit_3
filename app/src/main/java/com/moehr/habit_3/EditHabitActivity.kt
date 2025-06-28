@@ -18,6 +18,7 @@ import com.moehr.habit_3.data.model.RepeatPattern
 import com.moehr.habit_3.data.preferences.PushNotificationKeys
 import com.moehr.habit_3.ui.edit.EditItem
 import com.moehr.habit_3.data.viewmodel.HabitViewModel
+import com.moehr.habit_3.notification.NotificationAlarmManager
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
@@ -97,9 +98,9 @@ class EditHabitActivity : AppCompatActivity() {
             EditItem.ReminderContent(
                 pushEnabled = habit?.reminder?.isNotEmpty() ?: false,
                 timeOfDay = when (habit?.reminder) {
-                    PushNotificationKeys.MORNING.id -> "MORNING"
-                    PushNotificationKeys.NOON.id -> "NOON"
-                    PushNotificationKeys.EVENING.id -> "EVENING"
+                    PushNotificationKeys.TIME_MORNING.id -> "MORNING"
+                    PushNotificationKeys.TIME_NOON.id -> "NOON"
+                    PushNotificationKeys.TIME_EVENING.id -> "EVENING"
                     else -> "CUSTOM"
                 }
             )
@@ -180,10 +181,10 @@ class EditHabitActivity : AppCompatActivity() {
         // Build reminders list using ReminderTimeDTO
         val reminder : String? = if (reminderContent != null && reminderContent.pushEnabled) {
             when(reminderContent.timeOfDay) {
-                "MORNING" -> PushNotificationKeys.MORNING.id
-                "NOON" -> PushNotificationKeys.NOON.id
-                "EVENING" -> PushNotificationKeys.EVENING.id
-                "CUSTOM" -> PushNotificationKeys.CUSTOM.id
+                "MORNING" -> PushNotificationKeys.TIME_MORNING.id
+                "NOON" -> PushNotificationKeys.TIME_NOON.id
+                "EVENING" -> PushNotificationKeys.TIME_EVENING.id
+                "CUSTOM" -> PushNotificationKeys.TIME_CUSTOM.id
                 else -> null
             }
         } else {
@@ -216,9 +217,24 @@ class EditHabitActivity : AppCompatActivity() {
         // Save habit via ViewModel
         if (currentHabit != null) {
             habitViewModel.updateHabit(habitToSave)
+            NotificationAlarmManager(this).scheduleNotificationAlarm(habitToSave)
             Toast.makeText(this, "Habit updated", Toast.LENGTH_SHORT).show()
         } else {
-            habitViewModel.addHabit(habitToSave)
+            habitViewModel.addHabit(habitToSave) { id ->
+                val habit = Habit(
+                    id = id,
+                    name = habitToSave.name,
+                    motivationalNote = habitToSave.motivationalNote,
+                    type = habitToSave.type,
+                    repeat = habitToSave.repeat,
+                    unit = habitToSave.unit,
+                    target = habitToSave.target,
+                    reminder = habitToSave.reminder,
+                    createdAt = habitToSave.createdAt,
+                    log = emptyList()
+                )
+                NotificationAlarmManager(this).scheduleNotificationAlarm(habit)
+            }
             Toast.makeText(this, "Habit created", Toast.LENGTH_SHORT).show()
         }
 

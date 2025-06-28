@@ -6,6 +6,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.moehr.habit_3.data.model.Habit
 import com.moehr.habit_3.data.repository.HabitRepository
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 /**
@@ -31,9 +32,10 @@ class HabitViewModel(
      *
      * @param habit The [Habit] object to add.
      */
-    fun addHabit(habit: Habit) {
+    fun addHabit(habit: Habit, onResult: (Long) -> Unit) {
         viewModelScope.launch {
-            repository.addHabit(habit)
+            val id = repository.addHabit(habit)
+            onResult(id)
         }
     }
 
@@ -66,6 +68,7 @@ class HabitViewModel(
      * @return The [Habit] object if found, or null otherwise.
      */
     suspend fun getHabitById(id: Long): Habit {
-        return repository.getHabitById(id)
+        val habit = repository.getHabitById(id)
+        return habit ?: throw IllegalArgumentException("Tried to retrieve nonexistent habit.")
     }
 }

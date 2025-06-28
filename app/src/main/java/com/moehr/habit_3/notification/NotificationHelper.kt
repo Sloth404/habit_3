@@ -47,14 +47,15 @@ class NotificationHelper {
      * @param context Application context to build and show the notification.
      */
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-    fun showMotivationalNotification(context: Context) {
+    fun showMotivationalNotification(context: Context, habit: Habit) {
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.logo_svg)
             .setContentTitle(context.getString(R.string.app_name))
-            .setContentText(context.getString(R.string.motivation_text))
+            .setContentText("${context.getString(R.string.motivation_text)}${habit.name}")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
         NotificationManagerCompat.from(context).notify(MOTIVATION_NOTIFICATION_ID, builder.build())
+
     }
 
     /**
@@ -69,45 +70,43 @@ class NotificationHelper {
         context: Context,
         habit: Habit
     ) {
-        // only push the notification, if the habit is not already done today
-        if (!habit.isTodaySuccessful()) {
-            // Intent triggered when user indicates they did the habit
-            val didDoItIntent = Intent(context, HabitActionReceiver::class.java).apply {
-                action = ACTION_DID_DO_IT
-            }.putExtra("habit", habit)
-            val didDoItPendingIntent = PendingIntent.getBroadcast(
-                context, 0, didDoItIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        // Intent triggered when user indicates they did the habit
+        val didDoItIntent = Intent(context, HabitActionReceiver::class.java).apply {
+            action = ACTION_DID_DO_IT
+        }.putExtra("habit", habit)
+        val didDoItPendingIntent = PendingIntent.getBroadcast(
+            context, 0, didDoItIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Intent triggered when user indicates they didn't do the habit
+        val didntDoItIntent = Intent(context, HabitActionReceiver::class.java).apply {
+            action = ACTION_DID_NOT_DO_IT
+        }.putExtra("habit", habit)
+        val didntDoItPendingIntent = PendingIntent.getBroadcast(
+            context, 1, didntDoItIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Build notification with two action buttons
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.logo_svg)
+            .setContentTitle(context.getString(R.string.app_name))
+            .setContentText("${context.getString(R.string.reminder_text)}\n${habit.name}")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .addAction(
+                R.drawable.ic_overview,
+                context.getString(R.string.did_it),
+                didDoItPendingIntent
+            )
+            .addAction(
+                R.drawable.ic_statistics,
+                context.getString(R.string.didnt_do_it),
+                didntDoItPendingIntent
             )
 
-            // Intent triggered when user indicates they didn't do the habit
-            val didntDoItIntent = Intent(context, HabitActionReceiver::class.java).apply {
-                action = ACTION_DID_NOT_DO_IT
-            }.putExtra("habit", habit)
-            val didntDoItPendingIntent = PendingIntent.getBroadcast(
-                context, 1, didntDoItIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
+        NotificationManagerCompat.from(context).notify(REMINDER_NOTIFICATION_ID, builder.build())
 
-            // Build notification with two action buttons
-            val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.logo_svg)
-                .setContentTitle(context.getString(R.string.app_name))
-                .setContentText(("${habit.name}:\n${habit.motivationalNote}"))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .addAction(
-                    R.drawable.ic_overview,
-                    context.getString(R.string.did_it),
-                    didDoItPendingIntent
-                )
-                .addAction(
-                    R.drawable.ic_statistics,
-                    context.getString(R.string.didnt_do_it),
-                    didntDoItPendingIntent
-                )
-
-            NotificationManagerCompat.from(context).notify(REMINDER_NOTIFICATION_ID, builder.build())
-        }
     }
 
     companion object {
