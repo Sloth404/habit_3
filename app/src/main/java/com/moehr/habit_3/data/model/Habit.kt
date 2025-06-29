@@ -5,6 +5,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.TemporalAdjusters
+import java.time.temporal.TemporalUnit
 
 /**
  * Data class representing a Habit entity.
@@ -35,27 +36,49 @@ data class Habit(
 
     /**
      * Calculates the current streak of successful completions.
-     * TODO: TEST!!!
      *
      * @return Number of consecutive successful log entries.
      */
     fun getCurrentStreak(): Int {
-        val dates = log
-            .sortedByDescending { it }
-            .toSet()
+        var indexDate : LocalDate
+        val logList : Set<LocalDate> = log.sortedByDescending { it }.toSet()
 
-        if (dates.isEmpty()) return 0
-
-        var streak = 1
-        var previousDate = dates.elementAt(0)
-
-        for (i in 1 until dates.size) {
-            val currentDate = dates.elementAt(i)
-            if (previousDate.minusDays(1) == currentDate) {
-                streak++
-                previousDate = currentDate
+        var streak = 0
+        if (repeat == RepeatPattern.DAILY) {
+            if (type == HabitType.BUILD) {
+                indexDate = if (log.contains(LocalDate.now())) LocalDate.now() else LocalDate.now().minusDays(1)
+                for (date in logList) {
+                    if (indexDate.isEqual(date)) {
+                        streak++
+                        indexDate = indexDate.minusDays(1)
+                    } else {
+                        break
+                    }
+                }
             } else {
-                break
+                indexDate = LocalDate.now()
+                while (indexDate.isAfter(createdAt.toLocalDate()) || indexDate.isEqual(createdAt.toLocalDate())) {
+                    if(!log.contains(indexDate)) {
+                        streak++
+                        indexDate = indexDate.minusDays(1)
+                    } else {
+                        break
+                    }
+                }
+            }
+        } else if (repeat == RepeatPattern.WEEKLY) {
+            indexDate = if(isWeekSuccessful(LocalDate.now())) {
+                LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+            } else {
+                if (type == HabitType.BUILD) LocalDate.now().with(TemporalAdjusters.previous(DayOfWeek.SUNDAY)) else LocalDate.of(1970, 1, 1)
+            }
+            while (indexDate.isAfter(createdAt.toLocalDate()) || indexDate.isEqual(createdAt.toLocalDate())) {
+                if(isWeekSuccessful(indexDate)) {
+                    streak++
+                    indexDate = indexDate.with(TemporalAdjusters.previous(DayOfWeek.SUNDAY))
+                } else {
+                    break
+                }
             }
         }
         return streak
@@ -69,6 +92,7 @@ data class Habit(
     fun getSuccessfulDates(): List<LocalDate> {
         val startOfMonth = LocalDate.now().withDayOfMonth(1)
         if (repeat == RepeatPattern.DAILY) {
+            // DAILY
             // get all days from the beginning of the month that were successful
             val successfulDates = log.filter { date ->
                 (date.isAfter(startOfMonth.minusDays(1)) && date.isBefore(LocalDate.now().plusDays(1)))
@@ -79,6 +103,7 @@ data class Habit(
                 invertSuccessfulDates(successfulDates, startOfMonth)
             }
         } else {
+            // WEEKLY
             val dateList : MutableList<LocalDate> = mutableListOf()
             var date = startOfMonth
             var nextStartOfWeek = date.with(TemporalAdjusters.next(DayOfWeek.MONDAY))
@@ -91,11 +116,8 @@ data class Habit(
                 date = nextStartOfWeek
                 nextStartOfWeek = date.with(TemporalAdjusters.next(DayOfWeek.MONDAY))
             }
-            return if (type == HabitType.BUILD) {
-                dateList.toList()
-            } else {
-                invertSuccessfulDates(dateList.toList(), startOfMonth)
-            }
+
+            return dateList.toList()
         }
     }
 
