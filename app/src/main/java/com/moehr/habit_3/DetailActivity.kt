@@ -100,6 +100,7 @@ class DetailActivity : AppCompatActivity() {
         val startOfMonth = today.withDayOfMonth(1)
         val habitStart = habit.createdAt.toLocalDate()
         val successes = habit.getSuccessfulDates().toSet()
+        val pendingDates = habit.getPendingDates().toSet()
 
         // Find the first Monday on or before the first of the month to align calendar grid
         val firstMonday = startOfMonth.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
@@ -111,6 +112,7 @@ class DetailActivity : AppCompatActivity() {
                 date = date,
                 isBeforeStart = date.isBefore(habitStart),
                 isSuccess = successes.contains(date),
+                isPending = pendingDates.contains(date),
                 isToday = date == today,
                 isCreatedAt = date == habitStart
             )

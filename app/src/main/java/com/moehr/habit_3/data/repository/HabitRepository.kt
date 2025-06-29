@@ -2,35 +2,39 @@ package com.moehr.habit_3.data.repository
 
 import com.moehr.habit_3.data.model.entity.HabitEntity
 import com.moehr.habit_3.data.model.Habit
+import com.moehr.habit_3.data.model.RepeatPattern
 import com.moehr.habit_3.data.model.dao.HabitDao
 import com.moehr.habit_3.data.model.dao.HabitLogEntryDao
 import com.moehr.habit_3.data.model.entity.HabitLogEntry
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.temporal.TemporalAdjusters
 
 class HabitRepository(
-    private val habitDao : HabitDao,
-    private val habitLogEntryDao : HabitLogEntryDao,
+    private val habitDao: HabitDao,
+    private val habitLogEntryDao: HabitLogEntryDao,
 ) {
-    private val allHabitEntitiesFlow : Flow<List<HabitEntity>> = habitDao.getAll()
-    private val allLogEntriesFlow : Flow<List<HabitLogEntry>> = habitLogEntryDao.getAll()
+    private val allHabitEntitiesFlow: Flow<List<HabitEntity>> = habitDao.getAll()
+    private val allLogEntriesFlow: Flow<List<HabitLogEntry>> = habitLogEntryDao.getAll()
 
-    private val fullHabits : Flow<List<Habit>> = combine(allHabitEntitiesFlow, allLogEntriesFlow) { habits, logEntries ->
-        habits.map { habit ->
-            val habitLog = logEntries
-                .filter { it.uidHabit == habit.uid }
-                .map { it.date }
+    private val fullHabits: Flow<List<Habit>> =
+        combine(allHabitEntitiesFlow, allLogEntriesFlow) { habits, logEntries ->
+            habits.map { habit ->
+                val habitLog = logEntries
+                    .filter { it.uidHabit == habit.uid }
+                    .map { it.date }
 
-            habitEntityToHabit(habit, habitLog)
+                habitEntityToHabit(habit, habitLog)
+            }
         }
-    }
 
-    fun getHabits() : Flow<List<Habit>> {
+    fun getHabits(): Flow<List<Habit>> {
         return fullHabits
     }
 
-    suspend fun getHabitsStatic() : List<Habit> {
+    suspend fun getHabitsStatic(): List<Habit> {
         val habits = habitDao.getAllStatic()
         val logEntries = habitLogEntryDao.getAllStatic()
 
@@ -43,7 +47,7 @@ class HabitRepository(
         }
     }
 
-    suspend fun addHabit(item : Habit) : Long {
+    suspend fun addHabit(item: Habit): Long {
         val habit = HabitEntity(
             name = item.name,
             type = item.type,
@@ -57,7 +61,7 @@ class HabitRepository(
         return habitDao.insert(habit)
     }
 
-    suspend fun deleteHabit(item : Habit) {
+    suspend fun deleteHabit(item: Habit) {
         val habit = HabitEntity(
             uid = item.id.toInt(),
             name = item.name,
@@ -72,7 +76,7 @@ class HabitRepository(
         habitDao.delete(habit)
     }
 
-    suspend fun updateHabit(item : Habit) {
+    suspend fun updateHabit(item: Habit) {
         // Update the habit table
         val habit = HabitEntity(
             uid = item.id.toInt(),
@@ -87,9 +91,44 @@ class HabitRepository(
         )
         habitDao.update(habit)
 
+        if (item.repeat == RepeatPattern.DAILY) {
+            updateDailyHabitLogList(item)
+        } else {
+            updateWeeklyHabitLogList(item)
+        }
+    }
+
+    suspend fun getHabitById(id: Long): Habit? {
+        val habitEntity = habitDao.getById(id.toInt())
+        if (habitEntity != null) {
+            val habitLogEntries = habitLogEntryDao.getAllByHabitUid(habitEntity.uid)
+            val habitLogList = habitLogEntries.map { it.date }
+
+            return habitEntityToHabit(habitEntity, habitLogList)
+        } else {
+            return null
+        }
+    }
+
+    private fun habitEntityToHabit(habitEntity: HabitEntity, logEntries: List<LocalDate>): Habit {
+        return Habit(
+            id = habitEntity.uid.toLong(),
+            name = habitEntity.name,
+            type = habitEntity.type,
+            target = habitEntity.target,
+            unit = habitEntity.unit,
+            repeat = habitEntity.repeat,
+            createdAt = habitEntity.createdAt,
+            motivationalNote = habitEntity.motivationalNote,
+            reminder = habitEntity.reminder,
+            log = logEntries
+        )
+    }
+
+    private suspend fun updateDailyHabitLogList(item: Habit) {
         // Update the log table.
         // 1. Get current logs
-        val currentLogs : List<HabitLogEntry> = habitLogEntryDao.getAllByHabitUid(item.id.toInt())
+        val currentLogs: List<HabitLogEntry> = habitLogEntryDao.getAllByHabitUid(item.id.toInt())
 
         // 2.1 Get list of new logs
         val newLogs = item.log.map { date ->
@@ -124,7 +163,7 @@ class HabitRepository(
 
         // 4.2.1 only one entry is allowed to be edited and
         // 4.2.2 only today's entry is allowed to be edited
-        if ( logsToInsert.isNotEmpty() && (logsToInsert.size > 1 || logsToInsert[0].date != LocalDate.now())) {
+        if (logsToInsert.isNotEmpty() && (logsToInsert.size > 1 || logsToInsert[0].date != LocalDate.now())) {
             throw IllegalArgumentException("Only today's log entry is allowed to be updated")
         }
 
@@ -132,30 +171,34 @@ class HabitRepository(
         logsToInsert.forEach { habitLogEntryDao.insert(it) }
     }
 
-    suspend fun getHabitById(id : Long) : Habit? {
-        val habitEntity = habitDao.getById(id.toInt())
-        if (habitEntity != null) {
-            val habitLogEntries = habitLogEntryDao.getAllByHabitUid(habitEntity.uid)
-            val habitLogList = habitLogEntries.map { it.date }
+    private suspend fun updateWeeklyHabitLogList(item: Habit) {
+        // Update the log table.
+        // 1. Get current logs
+        val currentLogs: List<HabitLogEntry> = habitLogEntryDao.getAllByHabitUid(item.id.toInt())
 
-            return habitEntityToHabit(habitEntity, habitLogList)
-        } else {
-            return null
+        val today = LocalDate.now()
+        val startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        val endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+
+        // filter for logs from this week
+        val weeksLogs: List<HabitLogEntry> = currentLogs.filter { log ->
+            log.date in startOfWeek..endOfWeek
         }
-    }
 
-    private fun habitEntityToHabit(habitEntity : HabitEntity, logEntries : List<LocalDate>) : Habit {
-        return Habit(
-            id = habitEntity.uid.toLong(),
-            name = habitEntity.name,
-            type = habitEntity.type,
-            target = habitEntity.target,
-            unit = habitEntity.unit,
-            repeat = habitEntity.repeat,
-            createdAt = habitEntity.createdAt,
-            motivationalNote = habitEntity.motivationalNote,
-            reminder = habitEntity.reminder,
-            log = logEntries
-        )
+        if (weeksLogs.isEmpty()) {
+            // when this week has no entries -> add entry of today -> habit is done for this week
+            habitLogEntryDao.insert(HabitLogEntry(
+                uidHabit = item.id.toInt(),
+                date = today
+            ))
+        } else {
+            // when logs exist for this week -> remove all entries for this week to un-log the habit.
+            // removes all week-entries to ensure if a habit is changed from daily to weekly and has
+            // potentially more than one log entry, they are cleared too, to not falsely return
+            // 'true' with Habit.isThisWeekSuccessful()
+            weeksLogs.forEach { log ->
+                habitLogEntryDao.delete(log)
+            }
+        }
     }
 }

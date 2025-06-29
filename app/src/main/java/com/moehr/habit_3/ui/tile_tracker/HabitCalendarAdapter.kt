@@ -53,6 +53,9 @@ class HabitCalendarAdapter(private val days: List<HabitDay>) :
             // Habit was successful on this day → success appearance
             habitDay.isSuccess -> R.drawable.bg_tile_success
 
+            // Habit is successful this week, but this day is not passed yet → pending appearance
+            habitDay.isPending -> R.drawable.bg_tile_pending
+
             // Default appearance for normal days
             else -> R.drawable.bg_tile_default
         }

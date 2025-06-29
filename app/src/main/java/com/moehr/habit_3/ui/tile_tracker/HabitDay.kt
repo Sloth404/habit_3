@@ -15,6 +15,7 @@ data class HabitDay(
     val date: LocalDate,
     val isBeforeStart: Boolean,
     val isSuccess: Boolean,
+    val isPending: Boolean,
     val isToday: Boolean,
     val isCreatedAt: Boolean
 )

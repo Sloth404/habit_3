@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.moehr.habit_3.R
 import com.moehr.habit_3.data.model.Habit
+import com.moehr.habit_3.data.model.RepeatPattern
 import java.time.LocalDate
 
 /**
@@ -62,18 +63,21 @@ class HabitAdapter(
                     } else {
                         logList.add(LocalDate.now())
                     }
-                    onHabitClick(Habit(
-                        id = habit.id,
-                        name = habit.name,
-                        type = habit.type,
-                        target = habit.target,
-                        unit = habit.unit,
-                        repeat = habit.repeat,
-                        reminder = habit.reminder,
-                        createdAt = habit.createdAt,
-                        motivationalNote = habit.motivationalNote,
-                        log = logList
-                    ))
+
+                    onHabitClick(
+                        Habit(
+                            id = habit.id,
+                            name = habit.name,
+                            type = habit.type,
+                            target = habit.target,
+                            unit = habit.unit,
+                            repeat = habit.repeat,
+                            reminder = habit.reminder,
+                            createdAt = habit.createdAt,
+                            motivationalNote = habit.motivationalNote,
+                            log = logList
+                        )
+                    )
                 }
                 notifyItemChanged(position)
             }
@@ -98,12 +102,19 @@ class HabitAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = items[position]) {
             is HabitListItem.HabitItem -> {
+                val isSuccessful = if (item.habit.repeat == RepeatPattern.DAILY) {
+                    item.habit.isTodaySuccessful()
+                } else {
+                    item.habit.isThisWeekSuccessful()
+                }
+
                 (holder as HabitViewHolder).bind(
                     habit = item.habit,
                     position = position,
-                    isSuccessful = item.habit.isTodaySuccessful()
+                    isSuccessful = isSuccessful
                 )
             }
+
             is HabitListItem.Placeholder -> {
                 // No binding necessary for placeholder view
             }
