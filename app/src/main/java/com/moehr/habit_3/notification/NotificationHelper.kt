@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.PowerManager
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -28,7 +29,7 @@ class NotificationHelper {
         val channel = NotificationChannel(
             CHANNEL_ID,
             "Habit Notification",
-            NotificationManager.IMPORTANCE_DEFAULT
+            NotificationManager.IMPORTANCE_HIGH // not DEFAULT -> notifications wakeup the device
         ).apply {
             description = "Notifications for Habit^3"
         }
@@ -105,8 +106,26 @@ class NotificationHelper {
                 didntDoItPendingIntent
             )
 
+        wakeUpDevice(context)
         NotificationManagerCompat.from(context).notify(REMINDER_NOTIFICATION_ID, builder.build())
+    }
 
+    /**
+     * https://stackoverflow.com/questions/77159747/how-to-turn-on-the-screen-when-notification-arrives-on-device
+     */
+    private fun wakeUpDevice(context : Context) {
+        val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+        val screenIsOn = pm.isInteractive
+
+        if (!screenIsOn) {
+            val wakeLockTag = "habit3:notification_WAKELOCK"
+            // left the deprecated
+            val wakeLock = pm.newWakeLock(
+                PowerManager.ON_AFTER_RELEASE, wakeLockTag
+            )
+            // acquire will turn on the display - autorelease adter timeout
+            wakeLock.acquire(3000)
+        }
     }
 
     companion object {

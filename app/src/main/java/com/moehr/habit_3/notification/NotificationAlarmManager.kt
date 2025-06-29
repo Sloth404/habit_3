@@ -7,6 +7,7 @@ import android.content.Intent
 import android.util.Log
 import com.moehr.habit_3.data.model.Habit
 import com.moehr.habit_3.data.model.RepeatPattern
+import com.moehr.habit_3.data.preferences.PushNotificationKeys
 import com.moehr.habit_3.data.preferences.SharedPreferencesManager
 import java.util.Calendar
 
@@ -43,12 +44,22 @@ class NotificationAlarmManager(
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
-            val time = SharedPreferencesManager.loadSpecificPushSetting(context, habit.reminder ?: "")
+            var time = SharedPreferencesManager.loadSpecificPushSetting(context, habit.reminder ?: "")
+            // use the default times if the user has not set any custom values in the settings
+            if ( habit.reminder?.isNotEmpty() == true && time.isEmpty()) {
+                time = when (habit.reminder) {
+                    PushNotificationKeys.TIME_MORNING.id -> PushNotificationKeys.TIME_MORNING.defaultTime
+                    PushNotificationKeys.TIME_NOON.id -> PushNotificationKeys.TIME_NOON.defaultTime
+                    PushNotificationKeys.TIME_EVENING.id -> PushNotificationKeys.TIME_EVENING.defaultTime
+                    PushNotificationKeys.TIME_CUSTOM.id -> PushNotificationKeys.TIME_CUSTOM.defaultTime
+                    else -> ""
+                }
+            }
+
             if (time.isNotEmpty()) {
                 val calendar = Calendar.getInstance().apply {
                     timeInMillis = System.currentTimeMillis()
                     // Update hh:mm:ss of the calendar.
-                    /*
                     set(Calendar.HOUR_OF_DAY, if (time.isNotEmpty()) time.split(':')[0].toInt() else 9)
                     set(Calendar.MINUTE, if (time.isNotEmpty()) time.split(':')[1].toInt() else 0)
                     set(Calendar.SECOND, 0)
@@ -56,13 +67,16 @@ class NotificationAlarmManager(
                     if (before(Calendar.getInstance())) {
                         add(Calendar.DATE, 1)
                     }
-                    */
+
+                    // For debugging - sets the notifications to trigger each full minute
+                    /*
                     set(Calendar.HOUR_OF_DAY, 0)
                     set(Calendar.MINUTE, 6)
                     set(Calendar.SECOND, 0)
                     while (before(Calendar.getInstance())) {
                         add(Calendar.MINUTE, 1)
                     }
+                    */
                 }
 
                 // setExactAndAllowWhileIdle() to ensure alarms fire even in Doze mode.
