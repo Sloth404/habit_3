@@ -94,7 +94,7 @@ class HabitRepository(
         if (item.repeat == RepeatPattern.DAILY) {
             updateDailyHabitLogList(item)
         } else {
-            updateWeelyHabitLogList(item)
+            updateWeeklyHabitLogList(item)
         }
     }
 
@@ -171,7 +171,7 @@ class HabitRepository(
         logsToInsert.forEach { habitLogEntryDao.insert(it) }
     }
 
-    private suspend fun updateWeelyHabitLogList(item: Habit) {
+    private suspend fun updateWeeklyHabitLogList(item: Habit) {
         // Update the log table.
         // 1. Get current logs
         val currentLogs: List<HabitLogEntry> = habitLogEntryDao.getAllByHabitUid(item.id.toInt())

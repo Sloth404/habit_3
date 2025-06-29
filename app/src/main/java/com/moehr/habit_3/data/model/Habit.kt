@@ -4,6 +4,7 @@ import java.io.Serializable
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.temporal.Temporal
 import java.time.temporal.TemporalAdjuster
 import java.time.temporal.TemporalAdjusters
 
@@ -67,9 +68,39 @@ data class Habit(
      *
      * @return List of LocalDate objects representing successful completion dates.
      */
-    fun getSuccessfulDates(): List<LocalDate> = log.map { it }
+    fun getSuccessfulDates(): List<LocalDate> {
+        val startOfMonth = LocalDate.now().withDayOfMonth(1)
+        if (repeat == RepeatPattern.DAILY) {
+            // get all days from the beginning of the month that were successful
+            return log.filter { date ->
+                (date.isAfter(startOfMonth.minusDays(1)) && date.isBefore(LocalDate.now().plusDays(1)))
+            }
+        } else {
+            val dateList : MutableList<LocalDate> = mutableListOf()
+            var date = startOfMonth
+            var nextStartOfWeek = date.with(TemporalAdjusters.next(DayOfWeek.MONDAY))
+            while (nextStartOfWeek.isBefore(LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.TUESDAY)))) {
+                if(isWeekSuccessful(date)) {
+                    dateList += getDatesOfWeek(date, pending = false).filter { day ->
+                        (day.isAfter(createdAt.toLocalDate()) || day.isEqual(createdAt.toLocalDate()))
+                    }
+                }
+                date = nextStartOfWeek
+                nextStartOfWeek = date.with(TemporalAdjusters.next(DayOfWeek.MONDAY))
+            }
+            return dateList.toList()
+        }
+    }
 
-    fun isTodaySuccessful() : Boolean = if (log.contains(LocalDate.now())) true else false
+    fun getPendingDates(): List<LocalDate> {
+        return if (repeat == RepeatPattern.WEEKLY) {
+            getDatesOfWeek(LocalDate.now(), pending = true)
+        } else {
+            listOf()
+        }
+    }
+
+    fun isTodaySuccessful() : Boolean = log.contains(LocalDate.now())
 
     fun isThisWeekSuccessful() : Boolean {
         if (repeat == RepeatPattern.WEEKLY) {
@@ -83,7 +114,7 @@ data class Habit(
         }
     }
 
-    fun isWeekSuccessful(date : LocalDate) : Boolean {
+    private fun isWeekSuccessful(date : LocalDate) : Boolean {
         if (repeat == RepeatPattern.WEEKLY) {
             // get the start of the week of the given date
             val startOfWeek = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
@@ -94,4 +125,24 @@ data class Habit(
             throw IllegalStateException("The habbit is not set to WEEKLY. Use: Habit.isTodaySuccessful()")
         }
     }
+
+    private fun getDatesOfWeek(date : LocalDate, pending : Boolean) : List<LocalDate> {
+        val startOfWeek = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        val endOfWeek = date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+
+        var i = startOfWeek
+        val datesOfWeek : ArrayList<LocalDate> = arrayListOf()
+        while (i in startOfWeek..endOfWeek) {
+            if (!pending && (i.isBefore(LocalDate.now()) || i.isEqual(LocalDate.now()))) {
+                datesOfWeek.add(i)
+            } else if (pending && (i.isAfter(LocalDate.now()))) {
+                datesOfWeek.add(i)
+            }
+            i = i.plusDays(1)
+        }
+
+        return datesOfWeek
+    }
+
+
 }
