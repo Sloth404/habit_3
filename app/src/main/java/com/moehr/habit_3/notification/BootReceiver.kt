@@ -3,9 +3,11 @@ package com.moehr.habit_3.notification
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import androidx.lifecycle.asLiveData
+import android.util.Log
 import com.moehr.habit_3.MainApplication
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
@@ -15,8 +17,11 @@ class BootReceiver : BroadcastReceiver() {
             val alarmManager = NotificationAlarmManager(context)
 
             runBlocking {
-                habitRepository.getHabits().asLiveData().value?.forEach { habit ->
-                    alarmManager.scheduleNotificationAlarm(habit)
+                withContext(Dispatchers.IO) {
+                    habitRepository.getHabitsStatic().forEach { habit ->
+                        alarmManager.scheduleNotificationAlarm(habit)
+                        Log.d("NOTIFICATIONS", "SET UP NOTIFICATION DONE")
+                    }
                 }
             }
         }

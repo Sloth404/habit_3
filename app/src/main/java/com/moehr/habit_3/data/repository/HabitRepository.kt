@@ -30,6 +30,19 @@ class HabitRepository(
         return fullHabits
     }
 
+    suspend fun getHabitsStatic() : List<Habit> {
+        val habits = habitDao.getAllStatic()
+        val logEntries = habitLogEntryDao.getAllStatic()
+
+        return habits.map { habit ->
+            val habitLog = logEntries
+                .filter { it.uidHabit == habit.uid }
+                .map { it.date }
+
+            habitEntityToHabit(habit, habitLog)
+        }
+    }
+
     suspend fun addHabit(item : Habit) : Long {
         val habit = HabitEntity(
             name = item.name,
