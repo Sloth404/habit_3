@@ -4,14 +4,15 @@
     android:id="@+id/edit"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/tvState"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="30dp"
         android:fontFamily="@font/jetbrains_mono"
         android:textColor="@color/dark_grey"
         android:textSize="34sp"
@@ -23,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="40dp"
         android:fontFamily="@font/jetbrains_mono"
         android:text="@string/edit_habit_name"
         android:textColor="@color/dark_grey"
