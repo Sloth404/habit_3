@@ -4,8 +4,6 @@ import java.io.Serializable
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.temporal.Temporal
-import java.time.temporal.TemporalAdjuster
 import java.time.temporal.TemporalAdjusters
 
 /**
@@ -72,8 +70,13 @@ data class Habit(
         val startOfMonth = LocalDate.now().withDayOfMonth(1)
         if (repeat == RepeatPattern.DAILY) {
             // get all days from the beginning of the month that were successful
-            return log.filter { date ->
+            val successfulDates = log.filter { date ->
                 (date.isAfter(startOfMonth.minusDays(1)) && date.isBefore(LocalDate.now().plusDays(1)))
+            }
+            return if (type == HabitType.BUILD) {
+                successfulDates
+            } else {
+                invertSuccessfulDates(successfulDates, startOfMonth)
             }
         } else {
             val dateList : MutableList<LocalDate> = mutableListOf()
@@ -88,7 +91,11 @@ data class Habit(
                 date = nextStartOfWeek
                 nextStartOfWeek = date.with(TemporalAdjusters.next(DayOfWeek.MONDAY))
             }
-            return dateList.toList()
+            return if (type == HabitType.BUILD) {
+                dateList.toList()
+            } else {
+                invertSuccessfulDates(dateList.toList(), startOfMonth)
+            }
         }
     }
 
@@ -100,7 +107,7 @@ data class Habit(
         }
     }
 
-    fun isTodaySuccessful() : Boolean = log.contains(LocalDate.now())
+    fun isTodaySuccessful() : Boolean = if (type == HabitType.BUILD) log.contains(LocalDate.now()) else !log.contains(LocalDate.now())
 
     fun isThisWeekSuccessful() : Boolean {
         if (repeat == RepeatPattern.WEEKLY) {
@@ -108,7 +115,11 @@ data class Habit(
             val startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
             val endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
 
-            return log.any { it in startOfWeek..endOfWeek }
+            return if (type == HabitType.BUILD) {
+                log.any { it in startOfWeek..endOfWeek }
+            } else {
+                !log.any { it in startOfWeek..endOfWeek }
+            }
         } else {
             throw IllegalStateException("The habit is not set to WEEKLY. Use: Habit.isTodaySuccessful()")
         }
@@ -120,7 +131,11 @@ data class Habit(
             val startOfWeek = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
             val endOfWeek = date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
 
-            return log.any { it in startOfWeek..endOfWeek }
+            return if (type == HabitType.BUILD) {
+                log.any { it in startOfWeek..endOfWeek }
+            } else {
+                !log.any { it in startOfWeek..endOfWeek }
+            }
         } else {
             throw IllegalStateException("The habbit is not set to WEEKLY. Use: Habit.isTodaySuccessful()")
         }
@@ -144,5 +159,19 @@ data class Habit(
         return datesOfWeek
     }
 
-
+    /**
+     * Inverts the successful dates - if nothing was logged, the day is successful. Used for
+     * habit breaking mode.
+     * */
+    private fun invertSuccessfulDates(dates : List<LocalDate>, startOfMonth : LocalDate) : List<LocalDate> {
+        var i = startOfMonth
+        val successfulDates : ArrayList<LocalDate> = arrayListOf()
+        while (i.isBefore(LocalDate.now())) {
+            if (!dates.any { it == i }) {
+                successfulDates.add(i)
+            }
+            i.plusDays(1)
+        }
+        return successfulDates
+    }
 }
