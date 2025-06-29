@@ -110,7 +110,7 @@ data class Habit(
 
             return log.any { it in startOfWeek..endOfWeek }
         } else {
-            throw IllegalStateException("The habbit is not set to WEEKLY. Use: Habit.isTodaySuccessful()")
+            throw IllegalStateException("The habit is not set to WEEKLY. Use: Habit.isTodaySuccessful()")
         }
     }
 
