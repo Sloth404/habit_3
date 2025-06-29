@@ -8,7 +8,10 @@
     <string name="overview_week_preview_numbers">08 09 10 11 12 13 14</string>
     <string name="overview_add">add habit</string>
     <string name="overview_add_description">add habit placeholder</string>
+    <string name="item_habit_day">day</string>
     <string name="item_habit_days">days</string>
+    <string name="item_habit_week">week</string>
+    <string name="item_habit_weeks">weeks</string>
     <string name="edit_section_push_notification">Push Notification</string>
     <string name="edit_section_morning">MORNING</string>
     <string name="edit_section_noon">NOON</string>

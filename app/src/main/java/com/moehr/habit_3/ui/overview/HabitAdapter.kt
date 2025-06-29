@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.moehr.habit_3.R
 import com.moehr.habit_3.data.model.Habit
+import com.moehr.habit_3.data.model.HabitType
 import com.moehr.habit_3.data.model.RepeatPattern
 import java.time.LocalDate
 
@@ -58,7 +59,10 @@ class HabitAdapter(
                 if (habitItem is HabitListItem.HabitItem) {
                     val habit = habitItem.habit
                     val logList: MutableList<LocalDate> = habit.log.toMutableList()
-                    if (habit.isTodaySuccessful()) {
+
+                    if ((habit.type == HabitType.BUILD && habit.isTodaySuccessful()) ||
+                        (habit.type != HabitType.BUILD && !habit.isTodaySuccessful())
+                    ) {
                         logList.remove(LocalDate.now())
                     } else {
                         logList.add(LocalDate.now())
@@ -149,10 +153,26 @@ class HabitAdapter(
         fun bind(habit: Habit, position: Int, isSuccessful: Boolean) {
             val tvHabitName = itemView.findViewById<TextView>(R.id.tvHabitName)
             val tvStreak = itemView.findViewById<TextView>(R.id.tvStreak)
+            val tvStreakUnit = itemView.findViewById<TextView>(R.id.tvStreakUnit)
 
-            // Set habit name and current streak count
+            // Set habit name and current streak count.
             tvHabitName.text = habit.name
             tvStreak.text = habit.getCurrentStreak().toString()
+
+            // Set streak unit (day/days & week/weeks) depending on the streak.
+            if(habit.repeat == RepeatPattern.DAILY) {
+                if (habit.getCurrentStreak() == 1) {
+                    tvStreakUnit.text = itemView.context.getText(R.string.item_habit_day)
+                } else {
+                    tvStreakUnit.text = itemView.context.getText(R.string.item_habit_days)
+                }
+            } else {
+                if (habit.getCurrentStreak() == 1) {
+                    tvStreakUnit.text = itemView.context.getText(R.string.item_habit_week)
+                } else {
+                    tvStreakUnit.text = itemView.context.getText(R.string.item_habit_weeks)
+                }
+            }
 
             // Choose background drawable depending on selection and position for variety
             val backgroundRes = if (isSuccessful) {
