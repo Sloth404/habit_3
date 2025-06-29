@@ -5,8 +5,11 @@ import android.app.AlarmManager
 import android.content.Context
 import android.os.Bundle
 import android.content.Intent
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.moehr.habit_3.data.preferences.SharedPreferencesManager
@@ -26,6 +29,13 @@ class MainActivity : AppCompatActivity() {
         SharedPreferencesManager.loadTheme(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        enableEdgeToEdge()
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         // Initialize BottomNavigationView
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_nav)
