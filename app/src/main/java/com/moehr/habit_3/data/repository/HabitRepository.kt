@@ -30,7 +30,20 @@ class HabitRepository(
         return fullHabits
     }
 
-    suspend fun addHabit(item : Habit) {
+    suspend fun getHabitsStatic() : List<Habit> {
+        val habits = habitDao.getAllStatic()
+        val logEntries = habitLogEntryDao.getAllStatic()
+
+        return habits.map { habit ->
+            val habitLog = logEntries
+                .filter { it.uidHabit == habit.uid }
+                .map { it.date }
+
+            habitEntityToHabit(habit, habitLog)
+        }
+    }
+
+    suspend fun addHabit(item : Habit) : Long {
         val habit = HabitEntity(
             name = item.name,
             type = item.type,
@@ -41,7 +54,7 @@ class HabitRepository(
             createdAt = item.createdAt,
             motivationalNote = item.motivationalNote
         )
-        habitDao.insert(habit).toInt()
+        return habitDao.insert(habit)
     }
 
     suspend fun deleteHabit(item : Habit) {
@@ -119,25 +132,29 @@ class HabitRepository(
         logsToInsert.forEach { habitLogEntryDao.insert(it) }
     }
 
-    suspend fun getHabitById(id : Long) : Habit {
+    suspend fun getHabitById(id : Long) : Habit? {
         val habitEntity = habitDao.getById(id.toInt())
-        val habitLogEntries = habitLogEntryDao.getAllByHabitUid(habitEntity.uid)
-        val habitLogList = habitLogEntries.map { it.date }
+        if (habitEntity != null) {
+            val habitLogEntries = habitLogEntryDao.getAllByHabitUid(habitEntity.uid)
+            val habitLogList = habitLogEntries.map { it.date }
 
-        return habitEntityToHabit(habitEntity, habitLogList)
+            return habitEntityToHabit(habitEntity, habitLogList)
+        } else {
+            return null
+        }
     }
 
-    private fun habitEntityToHabit(habit : HabitEntity, logEntries : List<LocalDate>) : Habit {
+    private fun habitEntityToHabit(habitEntity : HabitEntity, logEntries : List<LocalDate>) : Habit {
         return Habit(
-            id = habit.uid.toLong(),
-            name = habit.name,
-            type = habit.type,
-            target = habit.target,
-            unit = habit.unit,
-            repeat = habit.repeat,
-            createdAt = habit.createdAt,
-            motivationalNote = habit.motivationalNote,
-            reminder = habit.reminder,
+            id = habitEntity.uid.toLong(),
+            name = habitEntity.name,
+            type = habitEntity.type,
+            target = habitEntity.target,
+            unit = habitEntity.unit,
+            repeat = habitEntity.repeat,
+            createdAt = habitEntity.createdAt,
+            motivationalNote = habitEntity.motivationalNote,
+            reminder = habitEntity.reminder,
             log = logEntries
         )
     }

@@ -124,16 +124,16 @@ class SettingsFragment : Fragment() {
         val pushNotificationTimes: Map<String, String> = SharedPreferencesManager.loadPushSettings(requireContext())
         pushNotificationTimes.forEach { time ->
             when(time.key) {
-                PushNotificationKeys.MORNING.id -> {
+                PushNotificationKeys.TIME_MORNING.id -> {
                     if (time.value.isNotEmpty()) view.findViewById<EditText>(R.id.editTimeMorning).setText(time.value)
                 }
-                PushNotificationKeys.NOON.id -> {
+                PushNotificationKeys.TIME_NOON.id -> {
                     if (time.value.isNotEmpty()) view.findViewById<EditText>(R.id.editTimeNoon).setText(time.value)
                 }
-                PushNotificationKeys.EVENING.id -> {
+                PushNotificationKeys.TIME_EVENING.id -> {
                     if (time.value.isNotEmpty()) view.findViewById<EditText>(R.id.editTimeEvening).setText(time.value)
                 }
-                PushNotificationKeys.CUSTOM.id -> {
+                PushNotificationKeys.TIME_CUSTOM.id -> {
                     if (time.value.isNotEmpty()) view.findViewById<EditText>(R.id.editTimeCustom).setText(time.value)
                 }
             }

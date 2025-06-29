@@ -1,8 +1,11 @@
 package com.moehr.habit_3.data.model
 
 import java.io.Serializable
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.temporal.TemporalAdjuster
+import java.time.temporal.TemporalAdjusters
 
 /**
  * Data class representing a Habit entity.
@@ -67,4 +70,15 @@ data class Habit(
     fun getSuccessfulDates(): List<LocalDate> = log.map { it }
 
     fun isTodaySuccessful() : Boolean = if (log.contains(LocalDate.now())) true else false
+
+    fun isThisWeekSuccessful() : Boolean {
+        if (repeat == RepeatPattern.WEEKLY) {
+            val today = LocalDate.now()
+            val startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+            val endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+
+            return log.any { it in startOfWeek..endOfWeek }
+        }
+        return false
+    }
 }

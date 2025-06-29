@@ -19,6 +19,9 @@ interface HabitLogEntryDao {
     @Query("SELECT * FROM habit_log_entry")
     fun getAll() : Flow<List<HabitLogEntry>>
 
+    @Query("SELECT * FROM habit_log_entry")
+    suspend fun getAllStatic() : List<HabitLogEntry>
+
     @Query("SELECT * FROM habit_log_entry WHERE uid_habit LIKE :uid")
     suspend fun getAllByHabitUid(uid: Int): List<HabitLogEntry>
 
