@@ -164,13 +164,13 @@ data class Habit(
      * habit breaking mode.
      * */
     private fun invertSuccessfulDates(dates : List<LocalDate>, startOfMonth : LocalDate) : List<LocalDate> {
-        var i = startOfMonth
+        var i = if (startOfMonth.isAfter(createdAt.toLocalDate())) startOfMonth else createdAt.toLocalDate()
         val successfulDates : ArrayList<LocalDate> = arrayListOf()
         while (i.isBefore(LocalDate.now())) {
             if (!dates.any { it == i }) {
                 successfulDates.add(i)
             }
-            i.plusDays(1)
+            i = i.plusDays(1)
         }
         return successfulDates
     }
