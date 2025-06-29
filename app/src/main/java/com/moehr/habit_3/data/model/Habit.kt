@@ -78,7 +78,20 @@ data class Habit(
             val endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
 
             return log.any { it in startOfWeek..endOfWeek }
+        } else {
+            throw IllegalStateException("The habbit is not set to WEEKLY. Use: Habit.isTodaySuccessful()")
         }
-        return false
+    }
+
+    fun isWeekSuccessful(date : LocalDate) : Boolean {
+        if (repeat == RepeatPattern.WEEKLY) {
+            // get the start of the week of the given date
+            val startOfWeek = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+            val endOfWeek = date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+
+            return log.any { it in startOfWeek..endOfWeek }
+        } else {
+            throw IllegalStateException("The habbit is not set to WEEKLY. Use: Habit.isTodaySuccessful()")
+        }
     }
 }
