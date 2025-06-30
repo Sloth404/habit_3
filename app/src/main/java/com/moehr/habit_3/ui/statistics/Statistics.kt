@@ -5,56 +5,66 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.moehr.habit_3.MainApplication
 import com.moehr.habit_3.R
 import com.moehr.habit_3.data.model.Habit
-import com.moehr.habit_3.data.model.HabitLogEntryDTO
 import com.moehr.habit_3.data.model.HabitType
-import com.moehr.habit_3.data.model.ReminderTimeDTO
+import com.moehr.habit_3.data.viewmodel.HabitViewModelFactory
 import com.moehr.habit_3.data.model.RepeatPattern
+import com.moehr.habit_3.data.viewmodel.HabitViewModel
+import java.time.LocalDate
 import java.time.LocalDateTime
 
+/**
+ * Fragment displaying statistics for habits in a RecyclerView.
+ */
 class Statistics : Fragment() {
 
-    private var actualHabits = mutableListOf<Habit>()
+    private lateinit var viewModel: HabitViewModel
+    private lateinit var adapter: StatisticsAdapter
+    private lateinit var app : MainApplication
+
+    // Current list of habits displayed
+    private var habits: List<Habit> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
+        // Inflate fragment layout
         val view = inflater.inflate(R.layout.fragment_statistics, container, false)
 
+        // Retrieve application
+        app = requireActivity().application as MainApplication
+
+        // Setup RecyclerView with LinearLayoutManager and adapter
         val rvStatistics = view.findViewById<RecyclerView>(R.id.rvStatistics)
         rvStatistics.layoutManager = LinearLayoutManager(requireContext())
+        adapter = StatisticsAdapter()
+        rvStatistics.adapter = adapter
 
-        actualHabits.add(
-            Habit(
-                id = 1L,
-                name = "Morning Jog",
-                type = HabitType.BUILD,
-                unit = "minutes",
-                repeat = RepeatPattern.DAILY,
-                reminders = listOf(
-                    ReminderTimeDTO(hour = 7, minute = 0)
-                ),
-                createdAt = LocalDateTime.now().minusDays(10),
-                motivationalNote = "Start your day with energy!",
-                log = listOf(
-                    HabitLogEntryDTO(date = LocalDateTime.now().minusDays(3), success = true),
-                    HabitLogEntryDTO(date = LocalDateTime.now().minusDays(2), success = true),
-                    HabitLogEntryDTO(date = LocalDateTime.now().minusDays(1), success = false)
-                )
-            )
-        )
+        // Initially submit padded habits list (may be empty)
+        adapter.submitList(padHabits(habits))
 
-        val displayHabits = padHabits(actualHabits)
+        // Initialize ViewModel with repository and factory
+        val factory = HabitViewModelFactory(app.habitRepository)
+        viewModel = ViewModelProvider(this, factory)[HabitViewModel::class.java]
 
-        rvStatistics.adapter = StatisticsAdapter(displayHabits)
+        // Observe LiveData habits list and update adapter on changes
+        viewModel.habits.observe(viewLifecycleOwner) { updatedHabits ->
+            habits = updatedHabits
+            adapter.submitList(padHabits(habits))
+        }
 
         return view
     }
 
+    /**
+     * Ensures the habit list has at least 3 items by adding placeholders if needed.
+     */
     private fun padHabits(habits: List<Habit>): List<Habit> {
         val padded = habits.toMutableList()
         while (padded.size < 3) {
@@ -63,18 +73,19 @@ class Statistics : Fragment() {
         return padded
     }
 
-    private fun createPlaceholderHabit(): Habit {
-        return Habit(
-            id = -1L,
-            name = "Coming Soon",
-            type = HabitType.BUILD, // type doesn't matter here
-            unit = "",
-            repeat = RepeatPattern.DAILY,
-            reminders = emptyList(),
-            createdAt = LocalDateTime.now(),  // today
-            motivationalNote = "",
-            log = emptyList()
-        )
-    }
+    /**
+     * Creates a placeholder habit shown as "Coming Soon" in the UI.
+     */
+    private fun createPlaceholderHabit(): Habit = Habit(
+        id = -1L,
+        name = "Coming Soon",
+        type = HabitType.BUILD,
+        unit = "",
+        repeat = RepeatPattern.DAILY,
+        reminder = null,
+        createdAt = LocalDateTime.now(),
+        motivationalNote = "",
+        log = emptyList(),
+        target = 0
+    )
 }
-

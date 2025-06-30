@@ -1,7 +1,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:padding="16dp">
 
     <TextView
@@ -9,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="30dp"
         android:fontFamily="@font/jetbrains_mono"
         android:text="@string/settings_title"
         android:textColor="@color/dark_grey"
@@ -75,19 +77,20 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/editText4"
+            android:id="@+id/editTimeMorning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="32dp"
-            android:focusable="false"
             android:fontFamily="@font/jetbrains_mono"
-            android:hint="@string/settings_custom_time"
-            android:inputType="time"
+            android:hint="@string/settings_morning_time"
             android:textColor="@color/dark_grey"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none" />
 
         <TextView
             android:id="@+id/textView13"
@@ -100,21 +103,22 @@
             android:textColor="@color/dark_grey"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView9" />
+            app:layout_constraintTop_toBottomOf="@+id/textView9"/>
 
         <EditText
-            android:id="@+id/editText"
+            android:id="@+id/editTimeNoon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="32dp"
-            android:focusable="false"
             android:fontFamily="@font/jetbrains_mono"
-            android:hint="@string/settings_morning_time"
-            android:inputType="time"
+            android:hint="@string/settings_noon_time"
             android:textColor="@color/dark_grey"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editText4" />
+            app:layout_constraintTop_toBottomOf="@+id/editTimeMorning"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none" />
 
         <TextView
             android:id="@+id/textView14"
@@ -130,18 +134,19 @@
             app:layout_constraintTop_toBottomOf="@+id/textView13" />
 
         <EditText
-            android:id="@+id/editText2"
+            android:id="@+id/editTimeEvening"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="32dp"
-            android:focusable="false"
             android:fontFamily="@font/jetbrains_mono"
-            android:hint="@string/settings_noon_time"
-            android:inputType="time"
+            android:hint="@string/settings_evening_time"
             android:textColor="@color/dark_grey"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editText" />
+            app:layout_constraintTop_toBottomOf="@+id/editTimeNoon"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none" />
 
         <TextView
             android:id="@+id/textView15"
@@ -157,20 +162,21 @@
             app:layout_constraintTop_toBottomOf="@+id/textView14" />
 
         <EditText
-            android:id="@+id/editText3"
+            android:id="@+id/editTimeCustom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="32dp"
             android:layout_marginBottom="8dp"
-            android:focusable="false"
             android:fontFamily="@font/jetbrains_mono"
-            android:hint="@string/settings_evening_time"
-            android:inputType="time"
+            android:hint="@string/settings_custom_time"
             android:textColor="@color/dark_grey"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editText2" />
+            app:layout_constraintTop_toBottomOf="@+id/editTimeEvening"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
@@ -207,56 +213,31 @@
         app:layout_constraintTop_toBottomOf="@+id/theme_toggle">
 
         <TextView
-            android:id="@+id/textView17"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="8dp"
-            android:fontFamily="@font/jetbrains_mono"
-            android:text="@string/settings_app"
-            android:textColor="@color/dark_grey"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Switch
-            android:id="@+id/switch_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:layout_marginEnd="32dp"
-            android:fontFamily="@font/jetbrains_mono"
-            android:text="@string/settings_light"
-            android:textColor="@color/dark_grey"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
             android:id="@+id/textView16"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="18dp"
             android:fontFamily="@font/jetbrains_mono"
             android:text="@string/settings_icon"
             android:textColor="@color/dark_grey"
             android:textSize="16sp"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView17" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Switch
             android:id="@+id/switch_app"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="32dp"
             android:fontFamily="@font/jetbrains_mono"
             android:text="@string/settings_light"
             android:textColor="@color/dark_grey"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/switch_icon" />
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
@@ -265,12 +246,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
-        android:fontFamily="@font/jetbrains_mono"
-        android:textColor="@color/dark_grey"
-        android:textSize="16sp"
-        android:text="@string/credits_underlined"
         android:clickable="true"
         android:focusable="true"
+        android:fontFamily="@font/jetbrains_mono"
+        android:text="@string/credits_underlined"
+        android:textColor="@color/dark_grey"
+        android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/textView18"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -297,6 +278,7 @@
         android:layout_marginBottom="130dp"
         android:backgroundTint="@color/dark_grey"
         android:text="@string/edit_btn_save"
+        android:textColor="@color/white"
         app:cornerRadius="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

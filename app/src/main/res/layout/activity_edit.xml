@@ -1,29 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/edit"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/tvState"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="30dp"
         android:fontFamily="@font/jetbrains_mono"
+        android:textColor="@color/dark_grey"
         android:textSize="34sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvEditHabitName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="16dp"
         android:fontFamily="@font/jetbrains_mono"
         android:text="@string/edit_habit_name"
+        android:textColor="@color/dark_grey"
         android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tvState"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -32,11 +40,12 @@
         android:layout_width="0dp"
         android:layout_height="5dp"
         android:layout_marginStart="64dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="64dp"
         android:background="@drawable/bg_separator_line"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvState" />
+        app:layout_constraintTop_toBottomOf="@+id/tvEditHabitName" />
 
     <EditText
         android:id="@+id/etHabitName"
@@ -81,6 +90,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginBottom="32dp"
         android:text="@string/edit_btn_cancel"
+        android:textColor="@color/black"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -93,6 +103,7 @@
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="32dp"
         android:text="@string/edit_btn_save"
+        android:textColor="@color/black"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
