@@ -187,6 +187,8 @@ class SettingsFragment : Fragment() {
         dialog.show()
     }
 
+    FUFUFUFUFUIFJUF
+
     /**
      * Collects current user inputs and saves settings to SharedPreferences.
      */
