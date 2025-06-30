@@ -51,13 +51,13 @@
     <string name="settings_title">Settings</string>
     <string name="settings_push">Push-Notification</string>
     <string name="settings_morning">Morning</string>
-    <string name="settings_custom_time">00:00</string>
+    <string name="settings_custom_time">21:00</string>
     <string name="settings_noon">Noon</string>
     <string name="settings_morning_time">09:00</string>
     <string name="settings_evening">Evening</string>
     <string name="settings_noon_time">13:00</string>
     <string name="settings_custom">Custom</string>
-    <string name="settings_evening_time">17:00</string>
+    <string name="settings_evening_time">18:00</string>
     <string name="settings_theme">Theme</string>
     <string name="settings_app">App</string>
     <string name="settings_light">Light</string>

@@ -48,10 +48,10 @@ class NotificationAlarmManager(
             // use the default times if the user has not set any custom values in the settings
             if ( habit.reminder?.isNotEmpty() == true && time.isEmpty()) {
                 time = when (habit.reminder) {
-                    PushNotificationKeys.TIME_MORNING.id -> PushNotificationKeys.TIME_MORNING.defaultTime
-                    PushNotificationKeys.TIME_NOON.id -> PushNotificationKeys.TIME_NOON.defaultTime
-                    PushNotificationKeys.TIME_EVENING.id -> PushNotificationKeys.TIME_EVENING.defaultTime
-                    PushNotificationKeys.TIME_CUSTOM.id -> PushNotificationKeys.TIME_CUSTOM.defaultTime
+                    PushNotificationKeys.TIME_MORNING.id -> PushNotificationKeys.TIME_MORNING.getDefaultTime(context)
+                    PushNotificationKeys.TIME_NOON.id -> PushNotificationKeys.TIME_NOON.getDefaultTime(context)
+                    PushNotificationKeys.TIME_EVENING.id -> PushNotificationKeys.TIME_EVENING.getDefaultTime(context)
+                    PushNotificationKeys.TIME_CUSTOM.id -> PushNotificationKeys.TIME_CUSTOM.getDefaultTime(context)
                     else -> ""
                 }
             }
