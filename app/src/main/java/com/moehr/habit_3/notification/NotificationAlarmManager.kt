@@ -12,7 +12,7 @@ import com.moehr.habit_3.data.preferences.SharedPreferencesManager
 import java.util.Calendar
 
 /**
- * Provides methods to time intents to trigger push notifications via [NotificationAlarmReciever]
+ * Provides methods to time intents to trigger push notifications via [NotificationAlarmReceiver]
  * */
 class NotificationAlarmManager(
     val context: Context
@@ -46,7 +46,7 @@ class NotificationAlarmManager(
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         if (alarmManager.canScheduleExactAlarms()) {
-            val intent = Intent(context, NotificationAlarmReciever::class.java).apply {
+            val intent = Intent(context, NotificationAlarmReceiver::class.java).apply {
                 action = ACTION_PUSH_REMINDER
             }.putExtra("habit_id", habit.id)
             val pendingIntent = PendingIntent.getBroadcast(

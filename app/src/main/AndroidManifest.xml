@@ -39,7 +39,7 @@
             tools:ignore="DiscouragedApi"/>
         <receiver android:name=".notification.HabitActionReceiver"
             android:enabled="true"/>
-        <receiver android:name=".notification.NotificationAlarmReciever"
+        <receiver android:name=".notification.NotificationAlarmReceiver"
             android:enabled="true" />
         <receiver android:name=".notification.BootReceiver"
             android:enabled="true"
