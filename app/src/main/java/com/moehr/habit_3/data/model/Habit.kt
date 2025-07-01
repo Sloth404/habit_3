@@ -54,7 +54,7 @@ data class Habit(
     /**
      * Calculate the build streak for a daily habit.
      *
-     * @reaturn Number of consecutive successfully logged days
+     * @return Number of consecutive successfully logged days
      * */
     private fun getDailyBuildStreak(): Int {
         val logList: Set<LocalDate> = log.sortedByDescending { it }.toSet()

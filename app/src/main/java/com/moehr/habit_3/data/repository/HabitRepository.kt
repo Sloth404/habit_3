@@ -260,6 +260,7 @@ class HabitRepository(
      * */
     private fun habitToHabitEntity(item: Habit) : HabitEntity {
         return HabitEntity(
+            uid = item.id.toInt(),
             name = item.name,
             type = item.type,
             target = item.target,
