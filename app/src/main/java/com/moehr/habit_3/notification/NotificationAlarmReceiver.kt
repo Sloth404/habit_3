@@ -16,7 +16,7 @@ import kotlinx.coroutines.runBlocking
  * `runBlocking {...}` is ok, because the app is in background and no UI interaction would
  * be blocked.
  * */
-class NotificationAlarmReciever : BroadcastReceiver() {
+class NotificationAlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action
         val habitId = intent.getLongExtra("habit_id", -1)

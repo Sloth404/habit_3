@@ -9,6 +9,9 @@ import androidx.room.Update
 import com.moehr.habit_3.data.model.entity.HabitEntity
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Dao for database access on the habit table
+ * */
 @Dao
 interface HabitDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)

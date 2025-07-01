@@ -7,6 +7,11 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.time.LocalDate
 
+/**
+ * Dataclass defining the structure of the `habit_log_entry` table for the database.
+ * Entries represent the dates of the logged days. When the habit gets deleted also all according
+ * habit log entries are deleted.
+ * */
 @Entity(
     tableName = "habit_log_entry",
     foreignKeys = [ForeignKey(

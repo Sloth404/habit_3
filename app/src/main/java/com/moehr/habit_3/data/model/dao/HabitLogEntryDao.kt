@@ -9,7 +9,7 @@ import com.moehr.habit_3.data.model.entity.HabitLogEntry
 import kotlinx.coroutines.flow.Flow
 
 /**
- * don't need to be update-able
+ * Dao for database access on the habit_log_entry table
  * */
 @Dao
 interface HabitLogEntryDao {

@@ -30,7 +30,7 @@ class SharedPreferencesManager {
          * @param pushNoon Time string for noon notification.
          * @param pushEvening Time string for evening notification.
          * @param pushCustom Time string for custom notification.
-         * @param icon Boolean indicating icon theme preference (dark or light).
+         * @param icon [future feature] Boolean indicating icon theme preference (dark or light).
          * @param app Boolean indicating app theme preference (dark or light).
          */
         fun saveSettings(
@@ -56,6 +56,12 @@ class SharedPreferencesManager {
             }
         }
 
+        /**
+         * Retrieves the notification time values saved in the shared preferences
+         *
+         * @param context Context to access SharedPreferences and apply theme.
+         * @return [Map] of the notification id (key) and the saved time (value)
+         * */
         fun loadPushSettings(context: Context) : Map<String, String> {
             val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             val pushMorning = prefs.getString(PushNotificationKeys.TIME_MORNING.id, "")
@@ -71,6 +77,12 @@ class SharedPreferencesManager {
             }
         }
 
+        /**
+         * Loads the time (as `hh:mm`) for a specific notification id
+         *
+         * @param context Context to access SharedPreferences and apply theme.
+         * @param notificationId id of the notification time
+         * */
         fun loadSpecificPushSetting(context: Context, notificationId: String) : String {
             val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             return when (notificationId) {

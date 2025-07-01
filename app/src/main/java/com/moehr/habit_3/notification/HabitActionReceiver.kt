@@ -12,7 +12,8 @@ import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 
 /**
- * Receives broadcasted intents for updating a habit as done/not done via [HabitViewModel]
+ * Receives broadcasted intents (sent by the buttons on the notification) for updating a habit as
+ * "done"/"not done" via [HabitViewModel]
  *
  * `runBlocking {...}` is ok, because the app is in background and no UI interaction would
  * be blocked.
@@ -29,6 +30,8 @@ class HabitActionReceiver : BroadcastReceiver() {
 
         if (habit != null) {
             when (action) {
+                // When the "did do" button of the notification was clicked.
+                // Logs today's date into the log list if the habit is not already logged today.
                 NotificationHelper.ACTION_DID_DO_IT -> {
                     Log.d("HabitActionReceiver", "ACTION_DID_DO_IT received")
                     if (!habit.isTodaySuccessful()) {
@@ -42,6 +45,8 @@ class HabitActionReceiver : BroadcastReceiver() {
                         }
                     }
                 }
+                // When the "did not do" button of the notification was clicked.
+                // Removes today's date from the log list from the habit's log list.
                 NotificationHelper.ACTION_DID_NOT_DO_IT -> {
                     Log.d("HabitActionReceiver", "ACTION_DID_NOT_DO_IT received")
                     if (habit.isTodaySuccessful()) {
@@ -59,6 +64,12 @@ class HabitActionReceiver : BroadcastReceiver() {
         }
     }
 
+    /**
+     * Method for updating a habit with a new log list.
+     *
+     * @param habit The habit to be updated.
+     * @param logList The list of log dates.
+     * */
     private fun getUpdatedHabit(habit : Habit, logList : List<LocalDate>) : Habit {
         // Updates the log list
         return Habit(
