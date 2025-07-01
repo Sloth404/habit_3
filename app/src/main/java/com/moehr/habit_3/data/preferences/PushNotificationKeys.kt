@@ -5,7 +5,7 @@ import com.moehr.habit_3.R
 
 /**
  *  Keys for notifications times. Furthermore each key stores the notification id used in notification
- *  management and the according string id for reading the default times form the string resources.
+ *  management and the according string id for reading the default times from the string resources.
  * */
 enum class PushNotificationKeys(val id : String, private val defaultTimeId : Int) {
     TIME_MORNING("push_morning", R.string.settings_morning_time),
