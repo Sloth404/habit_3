@@ -8,6 +8,9 @@ import com.moehr.habit_3.data.model.RepeatPattern
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+/**
+ * Dataclass defining the structure of the `habit` table for the database
+ * */
 @Entity(tableName = "habit")
 data class HabitEntity (
     @PrimaryKey(autoGenerate = true) val uid : Int = 0,

@@ -12,24 +12,36 @@ import com.moehr.habit_3.data.preferences.SharedPreferencesManager
 import java.util.Calendar
 
 /**
- * Sets timed intents to trigger scheduled push notifications via [NotificationAlarmReciever]
+ * Provides methods to time intents to trigger push notifications via [NotificationAlarmReciever]
  * */
 class NotificationAlarmManager(
     val context: Context
 ) {
+    /**
+     * Method to schedule an alarm for a notification depending on:
+     * - repeat pattern of the habit
+     * - a reminder is set for the habit
+     * - the habit is not already successful today
+     *
+     * @param habit the habit
+     * */
     fun scheduleNotificationAlarm(habit: Habit) {
         if (habit.repeat == RepeatPattern.DAILY && habit.reminder?.isNotEmpty() == true) {
             setNextDayAlarm(habit)
-        } else if (habit.repeat == RepeatPattern.WEEKLY && habit.reminder?.isNotEmpty() == true) {
-            if (!habit.isThisWeekSuccessful()) {
-                setNextDayAlarm(habit)
-            }
+        } else if (habit.repeat == RepeatPattern.WEEKLY && habit.reminder?.isNotEmpty() == true && !habit.isThisWeekSuccessful()) {
+            setNextDayAlarm(habit)
         } else {
             return
         }
 
     }
 
+    /**
+     * Method to set a notification-trigger alarm for the passed habit. The method also checks
+     * if the right permissions are given. Otherwise no alarm is set.
+     *
+     * @param habit the habit
+     * */
     private fun setNextDayAlarm(habit: Habit) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -44,14 +56,27 @@ class NotificationAlarmManager(
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
-            var time = SharedPreferencesManager.loadSpecificPushSetting(context, habit.reminder ?: "")
+            var time =
+                SharedPreferencesManager.loadSpecificPushSetting(context, habit.reminder ?: "")
             // use the default times if the user has not set any custom values in the settings
-            if ( habit.reminder?.isNotEmpty() == true && time.isEmpty()) {
+            if (habit.reminder?.isNotEmpty() == true && time.isEmpty()) {
                 time = when (habit.reminder) {
-                    PushNotificationKeys.TIME_MORNING.id -> PushNotificationKeys.TIME_MORNING.getDefaultTime(context)
-                    PushNotificationKeys.TIME_NOON.id -> PushNotificationKeys.TIME_NOON.getDefaultTime(context)
-                    PushNotificationKeys.TIME_EVENING.id -> PushNotificationKeys.TIME_EVENING.getDefaultTime(context)
-                    PushNotificationKeys.TIME_CUSTOM.id -> PushNotificationKeys.TIME_CUSTOM.getDefaultTime(context)
+                    PushNotificationKeys.TIME_MORNING.id -> PushNotificationKeys.TIME_MORNING.getDefaultTime(
+                        context
+                    )
+
+                    PushNotificationKeys.TIME_NOON.id -> PushNotificationKeys.TIME_NOON.getDefaultTime(
+                        context
+                    )
+
+                    PushNotificationKeys.TIME_EVENING.id -> PushNotificationKeys.TIME_EVENING.getDefaultTime(
+                        context
+                    )
+
+                    PushNotificationKeys.TIME_CUSTOM.id -> PushNotificationKeys.TIME_CUSTOM.getDefaultTime(
+                        context
+                    )
+
                     else -> ""
                 }
             }
@@ -60,7 +85,10 @@ class NotificationAlarmManager(
                 val calendar = Calendar.getInstance().apply {
                     timeInMillis = System.currentTimeMillis()
                     // Update hh:mm:ss of the calendar.
-                    set(Calendar.HOUR_OF_DAY, if (time.isNotEmpty()) time.split(':')[0].toInt() else 9)
+                    set(
+                        Calendar.HOUR_OF_DAY,
+                        if (time.isNotEmpty()) time.split(':')[0].toInt() else 9
+                    )
                     set(Calendar.MINUTE, if (time.isNotEmpty()) time.split(':')[1].toInt() else 0)
                     set(Calendar.SECOND, 0)
                     // If current time is past the hour of the alarm, update it to trigger the next day.
@@ -81,9 +109,7 @@ class NotificationAlarmManager(
 
                 // setExactAndAllowWhileIdle() to ensure alarms fire even in Doze mode.
                 alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    calendar.timeInMillis,
-                    pendingIntent
+                    AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent
                 )
             } else {
                 Log.d("ALARM_MANAGER", "Could not get the time for scheduling.")
@@ -93,7 +119,7 @@ class NotificationAlarmManager(
         }
     }
 
-    // TODO: add next monday alarm for weeekly habits
+    // TODO: [future feature - not in scope for "Mobile Systeme" class] add next monday alarm for weekly habits
 
     companion object {
         // Intent action strings to identify which alarm type was used

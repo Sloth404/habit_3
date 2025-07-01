@@ -5,7 +5,6 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.TemporalAdjusters
-import java.time.temporal.TemporalUnit
 
 /**
  * Data class representing a Habit entity.
@@ -35,7 +34,8 @@ data class Habit(
 ) : Serializable {
 
     /**
-     * Calculates the current streak of successful completions.
+     * Calculates the current streak of successful completions depending on the repeat pattern
+     * (either daily or weekly) and habit type (either to be built or broken).
      *
      * @return Number of consecutive successful log entries.
      */
@@ -51,6 +51,11 @@ data class Habit(
         }
     }
 
+    /**
+     * Calculate the build streak for a daily habit.
+     *
+     * @reaturn Number of consecutive successfully logged days
+     * */
     private fun getDailyBuildStreak(): Int {
         val logList: Set<LocalDate> = log.sortedByDescending { it }.toSet()
         var indexDate = if (log.contains(LocalDate.now())) {
@@ -72,6 +77,14 @@ data class Habit(
         return streak
     }
 
+    /**
+     * Calculate the break streak for a daily habit.
+     *
+     * Note: breaking habits only logged when done - goal is not to do them. Therefore a logged day
+     * is bad.
+     *
+     * @return Number of consecutive not logged days
+     * */
     private fun getDailyBreakStreak(): Int {
         var indexDate = LocalDate.now()
         var streak = 0
@@ -87,6 +100,13 @@ data class Habit(
         return streak
     }
 
+    /**
+     * Calculate the build/break streak of a habit that has to be done once weekly.
+     *
+     * Note: a logged week is a week in which at least one day is logged.
+     *
+     * @return Number of consecutive (not) logged weeks
+     * */
     private fun getWeeklyStreak(): Int {
         var indexDate = if (isWeekSuccessful(LocalDate.now())) {
             LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
@@ -112,9 +132,9 @@ data class Habit(
     }
 
     /**
-     * Retrieves a list of dates where the habit was successfully completed.
+     * Retrieves a list of dates where the habit was logged.
      *
-     * @return List of LocalDate objects representing successful completion dates.
+     * @return List of [LocalDate] objects representing dates of logged days.
      */
     fun getSuccessfulDates(): List<LocalDate> {
         val startOfMonth = LocalDate.now().withDayOfMonth(1)
@@ -153,7 +173,13 @@ data class Habit(
         }
     }
 
-    fun getPendingDates(): List<LocalDate> {
+    /**
+     * Calculates remaining days of the current week the user has either to wait until he has to do
+     * the habit again, or has left to do the habit.
+     *
+     * @return List of remaining days of the week
+     * */
+    fun getPendingDatesOfWeek(): List<LocalDate> {
         return if (repeat == RepeatPattern.WEEKLY) {
             getDatesOfWeek(LocalDate.now(), pending = true)
         } else {
@@ -161,9 +187,19 @@ data class Habit(
         }
     }
 
+    /**
+     * Method to check if the current day is already logged.
+     *
+     * @return true if today is logged; else false
+     * */
     fun isTodaySuccessful(): Boolean =
         if (type == HabitType.BUILD) log.contains(LocalDate.now()) else !log.contains(LocalDate.now())
 
+    /**
+     * Method to check if (at least) one day was already logged this week.
+     *
+     * @return true if any day of the week was logged; else false
+     * */
     fun isThisWeekSuccessful(): Boolean {
         if (repeat == RepeatPattern.WEEKLY) {
             val today = LocalDate.now()
@@ -176,10 +212,19 @@ data class Habit(
                 !log.any { it in startOfWeek..endOfWeek }
             }
         } else {
-            throw IllegalStateException("The habit is not set to WEEKLY. Use: Habit.isTodaySuccessful()")
+            throw IllegalStateException("The habit is not set to WEEKLY. This method is only applicable for WEEKLY habits.")
         }
     }
 
+    /**
+     * Method to check if the week of the passed date is/was logged. Determined by checking if
+     * any day of the week was logged.
+     *
+     *
+     * @param date any [LocalDate]
+     * @return true if any day of the week was logged; else false
+     * @throws IllegalStateException when the habits type is set to daily and this method is called.
+     * */
     private fun isWeekSuccessful(date: LocalDate): Boolean {
         if (repeat == RepeatPattern.WEEKLY) {
             // get the start of the week of the given date
@@ -196,6 +241,15 @@ data class Habit(
         }
     }
 
+    /**
+     * Method to get the dates of all days of the current week up to the current day or form the
+     * current day on (determined by the [pending] parameter). Start and end of the week are
+     * determined by the [date] parameter.
+     *
+     * @param date any [LocalDate]
+     * @param pending filter between days of week up until today, or from today until the end of the week.
+     * @return list of either past or future days of the current week
+     * */
     private fun getDatesOfWeek(date: LocalDate, pending: Boolean): List<LocalDate> {
         val startOfWeek = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
         val endOfWeek = date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
@@ -215,8 +269,12 @@ data class Habit(
     }
 
     /**
-     * Inverts the successful dates - if nothing was logged, the day is successful. Used for
+     * Inverts the successful [dates] - if nothing was logged, the day is successful. Used for
      * habit breaking mode.
+     *
+     * @param dates list of logged days
+     * @param startOfMonth the start date of the current month
+     * @return inverted logged days from the beginning of the month
      * */
     private fun invertSuccessfulDates(
         dates: List<LocalDate>,
