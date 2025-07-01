@@ -14,8 +14,7 @@ import com.moehr.habit_3.data.model.entity.HabitLogEntry
  * The main Room database for the app.
  *
  * This abstract class defines the database configuration and serves as the app’s
- * main access point to persisted data. It includes DAOs for [Todo], [Category],
- * [TodoCategory], and [Priority] entities.
+ * main access point to persisted data. It includes DAOs for [HabitEntity], [HabitLogEntry] entities.
  *
  * Room automatically generates the implementation of this class at compile time.
  *

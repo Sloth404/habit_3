@@ -84,7 +84,7 @@ class StatisticsAdapter : RecyclerView.Adapter<StatisticsAdapter.StatisticsViewH
         val startOfMonth = today.withDayOfMonth(1)
         val habitStart = habit.createdAt.toLocalDate()
         val successes = habit.getSuccessfulDates().toSet()
-        val pendingDates = habit.getPendingDates().toSet()
+        val pendingDates = habit.getPendingDatesOfWeek().toSet()
 
         val firstMonday = startOfMonth.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 
